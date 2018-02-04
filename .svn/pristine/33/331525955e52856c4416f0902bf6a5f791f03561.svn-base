@@ -1,0 +1,87 @@
+<h1>Product Details</h1>
+<?php
+foreach ($productData as $product) {
+	$pid = $product["product_id"];?>
+<h3><?=$product["product_model"]?> - (<?=$product["product_id"]?>)</h3>
+<p><strong>Size: </strong><?=$product["product_size"]?></p>
+<p><strong>Cooling: </strong><?=$product["product_has_cooling"]?></p>
+<p><strong>Heating: </strong><?=$product["product_has_heating"]?></p>
+<?php }?>
+
+
+<table width="1075" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="50" align="center" valign="middle" bgcolor="#CCCCCC"><table width="975" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="25">&nbsp;</td>
+            <td width="200" align="center" valign="middle">Name</td>
+            <td width="600" align="center" valign="middle">Description</td>
+            <td width="200" align="center" valign="middle"></td>
+            <td width="300" height="30" align="center" valign="middle">Thumbnail</td>
+            <td width="125" align="center" valign="middle"></td>
+            <td width="25" align="left" valign="middle">&nbsp;</td>
+          </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td align="center" valign="top" bgcolor="#E8E8E8"><table width="975" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td align="left" valign="top"><table width="975" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td height="45" align="left" valign="middle" bgcolor="#EEEEEE">
+	
+	<table width="975" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+				<?php
+				foreach ($productFeatures as $row) {
+					foreach ($row as $pfeatures) {
+					$fid = $pfeatures['feature_id'];
+				?>
+                    <td width="25">&nbsp;</td>
+                    <td width="200" align="center" valign="middle"><?=$pfeatures["feature_name"]?></td>
+                    <td width="600" align="center" valign="middle"><?=$pfeatures["feature_description"]?></td>
+                    <td width="200" align="left" valign="middle"><img src="<?=base_url().$pfeatures["feature_thumbnail"]?>" /></td>
+                    <td width="300" height="30" align="center" valign="middle"></td>
+                    <td width="125" align="center" valign="middle"><table width="125" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="80" align="right" valign="middle"></td>
+						<td width="15" align="right" valign="middle"></td>
+                        <td width="30" height="30" align="right" valign="middle">
+							<?=form_open('admin/delete_product_feature', array('method' => 'get'));?>
+							<input type="hidden" value="<?=$pid;?>" name="pid" />
+							<input type="hidden" value="<?=$fid;?>" name="fid" />
+						<input type = "image" onClick="return confirm('Sure?')" src = "<?php echo base_url() . "images/deleteBtn.png"?>" height = "30" width = "30" alt = "Submit Form" />
+						<?=form_close(); ?></td>
+                      </tr>
+                    </table></td>
+                    <td width="25" align="left" valign="middle">&nbsp;</td>
+                  </tr>
+				  <?php	
+						}
+					}
+					?>
+                </table></td>
+              </tr>
+              </table></td>
+          </tr>
+          <tr>
+            <td align="right"><table width="975" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="950" height="50" align="right" valign="bottom"></td>
+                <td width="25">&nbsp;</td>
+              </tr>
+            </table></td>
+          </tr>
+        </table></td>
+      </tr>
+    </table>
+
+<h1>Add Product Features</h1>
+<?php echo form_open('admin/product_features_process', array('method' => 'get'));?>
+<div id="name">
+	<input type="hidden" value="<?=$pid?>" name="id" />
+	<p>Name: <?=form_dropdown('features', $features);?></p>
+	<div class="detail"></div>
+</div>
+<p><?=form_submit('submit', 'Add');?></p>
+<?php echo form_close();?>

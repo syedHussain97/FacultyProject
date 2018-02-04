@@ -1,0 +1,116 @@
+<!-- Page Head -->
+<h2>Language Management</h2>
+<p id="page-intro">Language listing and their information.</p>
+
+<div class="clear"></div> <!-- End .clear -->
+
+<div class="content-box"><!-- Start Content Box -->
+	
+	<div class="content-box-header">
+		<h3>Languages</h3>
+		<div class="clear"></div>
+	</div> <!-- End .content-box-header -->
+	
+	<div class="content-box-content">
+		
+		<div class="tab-content default-tab" id="tab1"> <!-- This is the target div. id must match the href of this div's tab -->
+			<?=form_open('admin/languages_bulk_process'); ?>
+			
+			<table>
+				
+				<thead>
+					<tr>
+					   <th><input class="check-all" type="checkbox" /></th>
+					   <th>Language Name</th>
+					   <th>Language Code</th>
+					   <th>Action</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td colspan="6">
+							<div class="bulk-actions align-left">
+								<select name="action">
+									<option value="none">Choose an action...</option>
+									<option value="delete">Delete</option><img src="/Users/codinghazard/Desktop/logo.png" width="220" height="100" alt="Logo">
+								</select>
+								<input class="button" type="submit" onClick="return confirm('Are you sure?')" value="Apply to selected" />
+							</div>
+							<div class="clear"></div>
+						</td>
+					</tr>
+				</tfoot>
+				<tbody>
+					<?php foreach ($languages as $language) { ?>
+					<tr>
+						<td><input type="checkbox" value="<?=$language['language_id']?>" name="users[]"/></td>
+						<td><?=$language["language_name"]?></td>
+						<td><?=$language["language_code"]?></td>
+						<td>
+							<!-- Icons -->
+							 <a href="<?=base_url('index.php/admin/edit_user')."/".$language["language_id"]?>" title="Edit User"><img src="<?=base_url()?>images/admin/icons/pencil.png" alt="Edit" /></a>
+							 <a href="<?=base_url('index.php/admin/delete_user')."/".$language["language_id"]?>" title="Delete User"><img src="<?=base_url()?>images/admin/icons/cross.png" onClick="return confirm('Are you sure?')" alt="Delete" /></a> 
+							 <a href="<?=base_url('index.php/admin/set_privileges')."/".$language["language_id"]?>" title="Edit Privileges"><img src="<?=base_url()?>images/admin/icons/hammer_screwdriver.png" alt="Edit Privileges" /></a>
+						</td>
+					</tr>
+					<?php } ?>
+				</tbody>
+			</table>
+			</form>
+		</div> <!-- End #tab1 -->
+	
+	</div> <!-- End .content-box-content -->
+	
+</div>
+	
+	<div class="content-box"><!-- Start Content Box -->
+
+		<div class="content-box-header">
+			<h3>Add Language</h3>
+			<div class="clear"></div>
+		</div> <!-- End .content-box-header -->
+
+		<div class="content-box-content">
+
+			<div class="tab-content default-tab">
+				<? if ($this->session->flashdata('error')) { ?>
+				<div class="notification error png_bg">
+					<a href="#" class="close"><img src="<?=base_url()?>images/admin/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+					<div>
+						<?=$this->session->flashdata('error')?>
+					</div>
+				</div>
+				<? } ?>
+
+				<?=form_open('admin/language_add_process'); ?>
+
+					<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+						<p>
+							<label>Language Code</label>
+								<input class="text-input small-input" type="text" id="small-input" name="code" value="<?=set_value('code','')?>" /> 
+								<? if (form_error('code')) { ?>
+								<?=form_error('code','<span class="input-notification error png_bg">','</span>')?>
+								<? } ?>
+								<br /><small>Please enter a short name for the language. It will be used in the URLs. (eg. 'en' for English)</small>
+						</p>
+						<p>
+							<label>Language Name</label>
+							<input class="text-input small-input" type="text" id="small-input" name="name" value="<?=set_value('name','')?>" />
+							<? if (form_error('name')) { ?>
+							<?=form_error('name','<span class="input-notification error png_bg">','</span>')?>
+							<? } ?>
+						</p>
+						<p>
+							<input class="button" type="submit" value="Submit" />
+						</p>
+					</fieldset>
+
+					<div class="clear"></div><!-- End .clear -->
+
+				</form>
+
+			</div> <!-- End #tab2 -->
+
+		</div> <!-- End .content-box-content -->
+	
+</div> <!-- End .content-box -->

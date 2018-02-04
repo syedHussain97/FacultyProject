@@ -1,0 +1,100 @@
+<!-- Page Head -->
+<h2>Edit Product Series</h2>
+<p id="page-intro">You can edit, delete and update product series from here.</p>
+
+<div class="clear"></div> <!-- End .clear -->
+<?=form_open('admin/edit_product_series_process/' . $series["product_series_id"]); ?>
+<? if ($this->session->flashdata('error')) { ?>
+<div class="notification error png_bg">
+	<a href="#" class="close"><img src="<?=base_url()?>images/admin/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+	<div>
+		<?=$this->session->flashdata('error')?>
+	</div>
+</div>
+<? } ?>
+<div class="content-box column-left">
+	
+	<div class="content-box-header">
+		<h3>Edit Series</h3>
+		<ul class="content-box-tabs">
+			<?php for ($i=0; $i<count($languages); $i++) { ?>
+			<li><a href="#<?=$languages[$i]["language_code"]?>_create" <?php if ($i==0) { ?> class="default-tab"<?php } ?>><?=$languages[$i]["language_name"]?></a></li>
+			<?php } ?>
+		</ul>
+		<div class="clear"></div>
+	</div> <!-- End .content-box-header -->
+
+	<div class="content-box-content">
+		<?php $x = 0; foreach ($languages as $lang) { ?>
+		<div class="tab-content<?=($x==0)?" default-tab":""?>" id="<?=$lang["language_code"]?>_create">
+				<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+					<p>
+						<label>Title</label>
+							<input class="text-input large-input" type="text" id="large-input" name="title_<?=$lang["language_code"]?>" value="<?=set_value('title_'.$lang["language_code"],$series["name_".$lang["language_code"]])?>" /> 
+							<? if (form_error('title_'.$lang["language_code"])) { ?>
+							<?=form_error('title_'.$lang["language_code"],'<span class="input-notification error png_bg">','</span>')?>
+							<? } ?>
+					</p>
+					<p>
+						<label>Description</label>
+						<textarea class="text-input textarea wysiwyg" id="textarea" name="description_<?=$lang["language_code"]?>" cols="79" rows="5"><?=set_value('description_'.$lang["language_code"],$series["description_".$lang["language_code"]])?></textarea>
+						<? if (form_error('description_'.$lang["language_code"])) { ?>
+						<?=form_error('description_'.$lang["language_code"],'<span class="input-notification error png_bg">','</span>')?>
+						<? } ?>
+					</p>
+					<p>
+						<label>Features</label>
+						<textarea class="text-input textarea wysiwyg" id="textarea" name="features_<?=$lang["language_code"]?>" cols="79" rows="5"><?=set_value('features_'.$lang["language_code"],$series["features_".$lang["language_code"]])?></textarea>
+						<? if (form_error('features_'.$lang["language_code"])) { ?>
+						<?=form_error('features_'.$lang["language_code"],'<span class="input-notification error png_bg">','</span>')?>
+						<? } ?>
+					</p>
+				</fieldset>
+
+				<div class="clear"></div><!-- End .clear -->
+
+			
+
+		</div> <!-- End #tab2 -->
+		<?php $x++; } ?>
+
+	</div> <!-- End .content-box-content -->
+	
+</div> <!-- End .content-box -->
+
+<div class="content-box column-right">
+	
+	<div class="content-box-header"> <!-- Add the class "closed" to the Content box header to have it closed by default -->
+		
+		<h3>Actions</h3>
+		
+	</div> <!-- End .content-box-header -->
+	
+	<div class="content-box-content">
+		
+		<div class="tab-content default-tab">
+			
+			<fieldset>				
+			<p>
+				<label>Category</label>
+				<?=form_dropdown('category', $categories, $series["product_series_category"], 'class="medium-input"')?>
+			</p>		
+			<p>
+				<label>Thumbnail</label>
+				<input type="file" class="medium-input" name="thumbnail" value="<?=set_value('thumbnail','')?>" />
+				<? if (form_error('thumbnail')) { ?>
+				<?=form_error('thumbnail','<span class="input-notification error png_bg">','</span>')?>
+				<? } ?>
+			</p>
+			<p>
+				<input class="button" type="submit" value="Edit Series" />
+			</p>
+			</fieldset>
+			
+		</div> <!-- End #tab3 -->        
+		
+	</div> <!-- End .content-box-content -->
+	
+</div> <!-- End .content-box -->
+</form>
+<div class="clear"></div>

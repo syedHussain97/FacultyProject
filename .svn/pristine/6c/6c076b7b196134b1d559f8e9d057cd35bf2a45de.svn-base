@@ -1,0 +1,23 @@
+<h1>Edit Feature</h1>
+<?php echo form_open_multipart('admin/edit_features_process');?>
+	<?php
+		echo validation_errors();
+		if ($this->session->flashdata('error')) {
+	?>
+	<h2><?=$this->session->flashdata('error')?></h2>
+	<?php
+		}
+	?>
+	<input type="hidden" name="id" value="<?=$features['feature_id']?>" size="50" /><br />
+<div id="name">
+	<p>Name: <?=form_dropdown('name', $identifiers, $features['feature_name']);?></p>
+	<div class="detail"></div>
+</div>
+<div id="desc">
+	<p>Description: <?=form_dropdown('description', $identifiers, $features['feature_description']);?></p>
+	<div class="detail"></div>
+</div>
+	<img src="<?=base_url().$features['feature_thumbnail'];?>" />
+<p>Thumbnail: <input type="file" name="userfile" value="<?=$features['feature_thumbnail']?>" size="20" /></p>
+<p><?=form_submit('submit', 'Edit');?></p>
+<?php echo form_close(); ?>

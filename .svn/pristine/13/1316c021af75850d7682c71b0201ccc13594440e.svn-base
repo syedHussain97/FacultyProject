@@ -1,0 +1,790 @@
+-- phpMyAdmin SQL Dump
+-- version 3.2.4
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Mar 14, 2012 at 02:06 PM
+-- Server version: 5.1.44
+-- PHP Version: 5.3.1
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `cms`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_comments`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_comments` (
+  `comment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `comment_name` varchar(255) NOT NULL,
+  `comment_content` longblob NOT NULL,
+  `comment_component_id` int(11) NOT NULL,
+  `comment_email` varchar(255) NOT NULL,
+  `comment_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`comment_id`),
+  KEY `comment_component_id` (`comment_component_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `ch_comments`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_components`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_components` (
+  `component_id` int(11) NOT NULL AUTO_INCREMENT,
+  `component_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`component_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+
+--
+-- Dumping data for table `ch_components`
+--
+
+INSERT INTO `ch_components` (`component_id`, `component_name`) VALUES
+(2, 'page-4'),
+(4, 'page-4'),
+(7, 'page-26');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_faqs`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_faqs` (
+  `faq_id` int(11) NOT NULL AUTO_INCREMENT,
+  `faq_question` int(11) NOT NULL,
+  `faq_answer` int(11) NOT NULL,
+  `faq_order` int(11) NOT NULL,
+  PRIMARY KEY (`faq_id`),
+  KEY `faq_question` (`faq_question`),
+  KEY `faq_answer` (`faq_answer`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `ch_faqs`
+--
+
+INSERT INTO `ch_faqs` (`faq_id`, `faq_question`, `faq_answer`, `faq_order`) VALUES
+(2, 36, 37, 1),
+(3, 42, 43, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_gallery`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_gallery` (
+  `gallery_id` int(11) NOT NULL AUTO_INCREMENT,
+  `gallery_name` varchar(255) NOT NULL,
+  `gallery_description` longblob NOT NULL,
+  `gallery_component_id` int(11) NOT NULL,
+  `gallery_category_id` int(11) NOT NULL,
+  `gallery_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `gallery_created_by` int(11) NOT NULL,
+  PRIMARY KEY (`gallery_id`),
+  KEY `gallery_created_by` (`gallery_created_by`),
+  KEY `gallery_component_id` (`gallery_component_id`),
+  KEY `gallery_category_id` (`gallery_category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `ch_gallery`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_gallery_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_gallery_categories` (
+  `gallery_category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `gallery_category_name` int(11) NOT NULL,
+  `gallery_category_description` int(11) NOT NULL,
+  PRIMARY KEY (`gallery_category_id`),
+  KEY `gallery_category_name` (`gallery_category_name`),
+  KEY `gallery_category_description` (`gallery_category_description`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `ch_gallery_categories`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_languages`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_languages` (
+  `language_id` int(11) NOT NULL AUTO_INCREMENT,
+  `language_code` varchar(255) NOT NULL,
+  `language_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`language_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+
+--
+-- Dumping data for table `ch_languages`
+--
+
+INSERT INTO `ch_languages` (`language_id`, `language_code`, `language_name`) VALUES
+(1, 'en', 'English');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_language_identifiers`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_language_identifiers` (
+  `language_identifier_id` int(11) NOT NULL AUTO_INCREMENT,
+  `language_identifier_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`language_identifier_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;
+
+--
+-- Dumping data for table `ch_language_identifiers`
+--
+
+INSERT INTO `ch_language_identifiers` (`language_identifier_id`, `language_identifier_name`) VALUES
+(5, ''),
+(6, ''),
+(7, ''),
+(8, ''),
+(9, ''),
+(10, ''),
+(11, ''),
+(12, ''),
+(13, ''),
+(14, ''),
+(15, ''),
+(16, ''),
+(17, ''),
+(18, ''),
+(19, ''),
+(20, ''),
+(21, ''),
+(22, ''),
+(23, ''),
+(24, ''),
+(25, ''),
+(26, ''),
+(27, ''),
+(28, ''),
+(29, ''),
+(30, ''),
+(31, ''),
+(32, ''),
+(33, ''),
+(34, ''),
+(35, ''),
+(36, ''),
+(37, ''),
+(38, ''),
+(39, ''),
+(40, ''),
+(41, ''),
+(42, ''),
+(43, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_language_text`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_language_text` (
+  `language_text_id` int(11) NOT NULL AUTO_INCREMENT,
+  `language_text_language_id` int(11) NOT NULL,
+  `language_text_identifier` int(11) NOT NULL,
+  `language_text_content` longblob NOT NULL,
+  PRIMARY KEY (`language_text_id`),
+  KEY `language_text_language_id` (`language_text_language_id`),
+  KEY `language_text_identifier` (`language_text_identifier`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=112 ;
+
+--
+-- Dumping data for table `ch_language_text`
+--
+
+INSERT INTO `ch_language_text` (`language_text_id`, `language_text_language_id`, `language_text_identifier`, `language_text_content`) VALUES
+(33, 1, 5, 0x73617361),
+(34, 1, 6, 0x73617361),
+(35, 1, 7, 0x3c7370616e207374796c653d22666f6e742d7765696768743a20626f6c643b223e736173613c2f7370616e3e),
+(36, 1, 8, 0x73617361),
+(37, 1, 5, 0x73617361),
+(38, 1, 6, 0x73617361),
+(39, 1, 7, 0x3c7370616e207374796c653d22666f6e742d7765696768743a20626f6c643b223e736173613c2f7370616e3e),
+(40, 1, 8, 0x73617361),
+(45, 1, 9, 0x436c6173736963),
+(46, 1, 10, 0x636c61737369632070726f64756374),
+(49, 1, 11, 0x466c6f77657220536572696573),
+(50, 1, 12, 0x466c6f77657220536572696573),
+(51, 1, 13, 0x466c6f77657220536572696573),
+(55, 1, 14, 0x4163636f756e7420436f646573),
+(57, 1, 15, 0x417574686f7269736174696f6e20436f646573),
+(59, 1, 16, 0x414f4d73207065722053746174696f6e20286d617829),
+(61, 1, 17, 0x4170706172656c),
+(62, 1, 18, 0x4170706172656c),
+(65, 1, 19, 0x4163636f756e7420436f646573),
+(66, 1, 20, 0x64617364),
+(67, 1, 21, 0x736173617361),
+(68, 1, 22, 0x6163636f756e742d636f646573),
+(73, 1, 23, 0x41626f7574205573),
+(74, 1, 24, ''),
+(75, 1, 25, 0x73617361),
+(76, 1, 26, 0x61626f75742d7573),
+(81, 1, 27, 0x74657374696e6720312c322c332e2e),
+(83, 1, 28, 0x31206120652066),
+(85, 1, 29, 0x32206220652067),
+(87, 1, 30, 0x33206320652067),
+(89, 1, 31, 0x312061),
+(91, 1, 32, 0x322062),
+(93, 1, 33, 0x332063),
+(104, 1, 36, 0x4b69612062616c6c7520636875747961206861693f),
+(105, 1, 37, 0x596573),
+(106, 1, 38, 0x41696b207468612062616c6c75),
+(107, 1, 39, 0x62616c6c75206c756e),
+(108, 1, 40, 0x536f6d65207469746c65),
+(109, 1, 41, 0x736f6d6520636f6e74656e74),
+(110, 1, 42, 0x4b69612062616e747520636875747961206861693f),
+(111, 1, 43, 0x4d61796265);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_news`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_news` (
+  `news_id` int(11) NOT NULL AUTO_INCREMENT,
+  `news_title` int(11) NOT NULL,
+  `news_content` int(11) NOT NULL,
+  `news_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `news_created_by` int(11) NOT NULL,
+  PRIMARY KEY (`news_id`),
+  KEY `news_title` (`news_title`),
+  KEY `news_content` (`news_content`),
+  KEY `news_created_by` (`news_created_by`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `ch_news`
+--
+
+INSERT INTO `ch_news` (`news_id`, `news_title`, `news_content`, `news_date`, `news_created_by`) VALUES
+(1, 38, 39, '2012-03-14 16:39:51', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_pages`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_pages` (
+  `page_id` int(11) NOT NULL AUTO_INCREMENT,
+  `page_component_id` int(11) NOT NULL,
+  `page_title` int(11) NOT NULL,
+  `page_meta` int(11) NOT NULL,
+  `page_nice_name` int(11) NOT NULL,
+  `page_content` int(11) NOT NULL,
+  `page_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `page_created_by` int(11) NOT NULL,
+  `page_creation_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `page_status` enum('Y','N') NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`page_id`),
+  KEY `page_created_by` (`page_created_by`),
+  KEY `page_component_id` (`page_component_id`),
+  KEY `page_content` (`page_content`),
+  KEY `page_meta` (`page_meta`),
+  KEY `page_title` (`page_title`),
+  KEY `page_nice_name` (`page_nice_name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+--
+-- Dumping data for table `ch_pages`
+--
+
+INSERT INTO `ch_pages` (`page_id`, `page_component_id`, `page_title`, `page_meta`, `page_nice_name`, `page_content`, `page_timestamp`, `page_created_by`, `page_creation_time`, `page_status`) VALUES
+(9, 7, 23, 24, 26, 25, '2012-03-14 09:49:07', 1, '2012-03-13 12:16:26', 'Y');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_pictures`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_pictures` (
+  `picture_id` int(11) NOT NULL AUTO_INCREMENT,
+  `picture_gallery_id` int(11) NOT NULL,
+  `picture_thumb_path` varchar(255) NOT NULL,
+  `picture_path` varchar(255) NOT NULL,
+  `picture_uploaded_by` int(11) NOT NULL,
+  `picture_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`picture_id`),
+  KEY `picture_gallery_id` (`picture_gallery_id`),
+  KEY `picture_uploaded_by` (`picture_uploaded_by`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `ch_pictures`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_press_releases`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_press_releases` (
+  `press_release_id` int(11) NOT NULL AUTO_INCREMENT,
+  `press_release_title` int(11) NOT NULL,
+  `press_release_content` int(11) NOT NULL,
+  `press_release_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `press_release_created_by` int(11) NOT NULL,
+  PRIMARY KEY (`press_release_id`),
+  KEY `press_release_title` (`press_release_title`),
+  KEY `press_release_content` (`press_release_content`),
+  KEY `press_release_created_by` (`press_release_created_by`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `ch_press_releases`
+--
+
+INSERT INTO `ch_press_releases` (`press_release_id`, `press_release_title`, `press_release_content`, `press_release_date`, `press_release_created_by`) VALUES
+(1, 40, 41, '2012-03-14 17:01:49', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_products`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_products` (
+  `product_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_series` int(11) NOT NULL,
+  `product_model` varchar(255) NOT NULL,
+  `product_description` int(11) NOT NULL,
+  `product_thumb` varchar(255) NOT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `product_description` (`product_description`),
+  KEY `product_series` (`product_series`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `ch_products`
+--
+
+INSERT INTO `ch_products` (`product_id`, `product_series`, `product_model`, `product_description`, `product_thumb`) VALUES
+(1, 1, 'iPhone 3G', 27, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_product_category`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_product_category` (
+  `product_category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_category_name` int(11) NOT NULL,
+  `product_category_description` int(11) NOT NULL,
+  `product_category_thumb` varchar(255) NOT NULL,
+  PRIMARY KEY (`product_category_id`),
+  KEY `product_category_name` (`product_category_name`),
+  KEY `product_category_description` (`product_category_description`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `ch_product_category`
+--
+
+INSERT INTO `ch_product_category` (`product_category_id`, `product_category_name`, `product_category_description`, `product_category_thumb`) VALUES
+(1, 9, 10, ''),
+(2, 17, 18, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_product_series`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_product_series` (
+  `product_series_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_series_category` int(11) NOT NULL,
+  `product_series_name` int(11) NOT NULL,
+  `product_series_description` int(11) NOT NULL,
+  `product_series_features` int(11) NOT NULL,
+  `product_series_thumb` varchar(255) NOT NULL,
+  PRIMARY KEY (`product_series_id`),
+  KEY `product_series_name` (`product_series_name`),
+  KEY `product_series_description` (`product_series_description`),
+  KEY `product_series_features` (`product_series_features`),
+  KEY `product_series_category` (`product_series_category`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `ch_product_series`
+--
+
+INSERT INTO `ch_product_series` (`product_series_id`, `product_series_category`, `product_series_name`, `product_series_description`, `product_series_features`, `product_series_thumb`) VALUES
+(1, 1, 11, 12, 13, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_product_series_specs`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_product_series_specs` (
+  `product_series_spec_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_series_id` int(11) NOT NULL,
+  `product_series_spec_title` int(11) NOT NULL,
+  `product_series_spec_order` int(11) NOT NULL,
+  PRIMARY KEY (`product_series_spec_id`),
+  KEY `product_series_spec_title` (`product_series_spec_title`),
+  KEY `product_series_id` (`product_series_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `ch_product_series_specs`
+--
+
+INSERT INTO `ch_product_series_specs` (`product_series_spec_id`, `product_series_id`, `product_series_spec_title`, `product_series_spec_order`) VALUES
+(1, 1, 14, 2),
+(2, 1, 15, 1),
+(3, 1, 16, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_product_specs`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_product_specs` (
+  `product_spec_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_spec_product_id` int(11) NOT NULL,
+  `product_series_spec_id` int(11) NOT NULL,
+  `product_spec_value` int(11) NOT NULL,
+  PRIMARY KEY (`product_spec_id`),
+  KEY `product_series_spec_id` (`product_series_spec_id`),
+  KEY `product_spec_value` (`product_spec_value`),
+  KEY `product_spec_product_id` (`product_spec_product_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `ch_product_specs`
+--
+
+INSERT INTO `ch_product_specs` (`product_spec_id`, `product_spec_product_id`, `product_series_spec_id`, `product_spec_value`) VALUES
+(1, 1, 1, 28),
+(2, 1, 2, 29),
+(3, 1, 3, 30),
+(4, 1, 1, 31),
+(5, 1, 2, 32),
+(6, 1, 3, 33);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_roles`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_roles` (
+  `role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_name` varchar(255) NOT NULL,
+  `role_category_id` int(11) NOT NULL,
+  `role_description` text NOT NULL,
+  PRIMARY KEY (`role_id`),
+  KEY `role_category_id` (`role_category_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `ch_roles`
+--
+
+INSERT INTO `ch_roles` (`role_id`, `role_name`, `role_category_id`, `role_description`) VALUES
+(1, 'PAGE_ADD', 1, 'A user is allowed to add and edit pages.'),
+(2, 'PAGE_DELETE', 1, 'A user is allowed to delete pages.'),
+(3, 'USER_MANAGEMENT', 2, 'Ability to edit, delete and add new users and manage their privileges.');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_role_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_role_categories` (
+  `role_category_id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_category_name` varchar(255) NOT NULL,
+  `role_category_description` text NOT NULL,
+  PRIMARY KEY (`role_category_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `ch_role_categories`
+--
+
+INSERT INTO `ch_role_categories` (`role_category_id`, `role_category_name`, `role_category_description`) VALUES
+(1, 'Pages', 'contains roles for editing/adding pages.'),
+(2, 'Super Admin', 'Manages new users and their privileges.');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_sessions`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_sessions` (
+  `session_id` varchar(40) NOT NULL DEFAULT '0',
+  `ip_address` varchar(16) NOT NULL DEFAULT '0',
+  `user_agent` varchar(120) NOT NULL,
+  `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
+  `user_data` text NOT NULL,
+  PRIMARY KEY (`session_id`),
+  KEY `last_activity_idx` (`last_activity`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ch_sessions`
+--
+
+INSERT INTO `ch_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
+('4266f67bbaf4d682eebdab0ff6c02496', '0.0.0.0', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:10.0.2) Gecko/20100101 Firefox/10.0.2', 1331733847, 'a:7:{s:9:"user_data";s:0:"";s:9:"logged_in";b:1;s:7:"user_id";s:1:"1";s:13:"user_username";s:5:"osama";s:13:"user_password";s:32:"098f6bcd4621d373cade4e832627b4f6";s:14:"user_firstname";s:5:"Osama";s:13:"user_lastname";s:6:"Khalid";}');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_subscribers`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_subscribers` (
+  `subscriber_id` int(11) NOT NULL AUTO_INCREMENT,
+  `subscriber_firstname` varchar(255) NOT NULL,
+  `subscriber_lastname` varchar(255) NOT NULL,
+  `subscriber_email` varchar(255) NOT NULL,
+  `subscriber_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`subscriber_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `ch_subscribers`
+--
+
+INSERT INTO `ch_subscribers` (`subscriber_id`, `subscriber_firstname`, `subscriber_lastname`, `subscriber_email`, `subscriber_date`) VALUES
+(1, 'Osama', 'Khalid', 'samkool@gmail.com', '2012-03-14 17:16:38'),
+(2, 'Asim', 'Hassan', 'asim@codinghazard.com', '2012-03-14 17:16:38'),
+(3, 'Hassan', 'Ahmad', 'hahmed@codinghazard.com', '2012-03-14 17:58:36'),
+(4, 'Ali', 'Maisam', 'ali@codinghazard.com', '2012-03-14 17:58:36');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_users`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_users` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_username` varchar(255) NOT NULL,
+  `user_password` varchar(32) NOT NULL,
+  `user_firstname` varchar(255) NOT NULL,
+  `user_lastname` varchar(255) NOT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `ch_users`
+--
+
+INSERT INTO `ch_users` (`user_id`, `user_username`, `user_password`, `user_firstname`, `user_lastname`) VALUES
+(1, 'osama', '098f6bcd4621d373cade4e832627b4f6', 'Osama', 'Khalid'),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 'Test', 'User');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_user_roles`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_user_roles` (
+  `user_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`,`role_id`),
+  KEY `role_id` (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ch_user_roles`
+--
+
+INSERT INTO `ch_user_roles` (`user_id`, `role_id`) VALUES
+(1, 1),
+(2, 1),
+(1, 2),
+(2, 2),
+(1, 3),
+(2, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ch_vars`
+--
+
+CREATE TABLE IF NOT EXISTS `ch_vars` (
+  `var_id` int(11) NOT NULL AUTO_INCREMENT,
+  `var_name` varchar(255) NOT NULL,
+  `var_value` text NOT NULL,
+  PRIMARY KEY (`var_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `ch_vars`
+--
+
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `ch_comments`
+--
+ALTER TABLE `ch_comments`
+  ADD CONSTRAINT `ch_comments_ibfk_1` FOREIGN KEY (`comment_component_id`) REFERENCES `ch_components` (`component_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_faqs`
+--
+ALTER TABLE `ch_faqs`
+  ADD CONSTRAINT `ch_faqs_ibfk_1` FOREIGN KEY (`faq_question`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_faqs_ibfk_2` FOREIGN KEY (`faq_answer`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_gallery`
+--
+ALTER TABLE `ch_gallery`
+  ADD CONSTRAINT `ch_gallery_ibfk_1` FOREIGN KEY (`gallery_component_id`) REFERENCES `ch_comments` (`comment_component_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_gallery_ibfk_2` FOREIGN KEY (`gallery_created_by`) REFERENCES `ch_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_gallery_ibfk_3` FOREIGN KEY (`gallery_category_id`) REFERENCES `ch_gallery_categories` (`gallery_category_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_gallery_categories`
+--
+ALTER TABLE `ch_gallery_categories`
+  ADD CONSTRAINT `ch_gallery_categories_ibfk_1` FOREIGN KEY (`gallery_category_name`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_gallery_categories_ibfk_2` FOREIGN KEY (`gallery_category_description`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_language_text`
+--
+ALTER TABLE `ch_language_text`
+  ADD CONSTRAINT `ch_language_text_ibfk_1` FOREIGN KEY (`language_text_language_id`) REFERENCES `ch_languages` (`language_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_language_text_ibfk_2` FOREIGN KEY (`language_text_identifier`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_news`
+--
+ALTER TABLE `ch_news`
+  ADD CONSTRAINT `ch_news_ibfk_3` FOREIGN KEY (`news_created_by`) REFERENCES `ch_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_news_ibfk_1` FOREIGN KEY (`news_title`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_news_ibfk_2` FOREIGN KEY (`news_content`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_pages`
+--
+ALTER TABLE `ch_pages`
+  ADD CONSTRAINT `ch_pages_ibfk_1` FOREIGN KEY (`page_created_by`) REFERENCES `ch_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_pages_ibfk_2` FOREIGN KEY (`page_component_id`) REFERENCES `ch_components` (`component_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_pages_ibfk_3` FOREIGN KEY (`page_title`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_pages_ibfk_4` FOREIGN KEY (`page_meta`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_pages_ibfk_5` FOREIGN KEY (`page_content`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_pages_ibfk_6` FOREIGN KEY (`page_nice_name`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_pictures`
+--
+ALTER TABLE `ch_pictures`
+  ADD CONSTRAINT `ch_pictures_ibfk_1` FOREIGN KEY (`picture_gallery_id`) REFERENCES `ch_gallery` (`gallery_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_pictures_ibfk_3` FOREIGN KEY (`picture_uploaded_by`) REFERENCES `ch_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_press_releases`
+--
+ALTER TABLE `ch_press_releases`
+  ADD CONSTRAINT `ch_press_releases_ibfk_3` FOREIGN KEY (`press_release_created_by`) REFERENCES `ch_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_press_releases_ibfk_1` FOREIGN KEY (`press_release_title`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_press_releases_ibfk_2` FOREIGN KEY (`press_release_content`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_products`
+--
+ALTER TABLE `ch_products`
+  ADD CONSTRAINT `ch_products_ibfk_1` FOREIGN KEY (`product_description`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_products_ibfk_2` FOREIGN KEY (`product_series`) REFERENCES `ch_product_series` (`product_series_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_product_category`
+--
+ALTER TABLE `ch_product_category`
+  ADD CONSTRAINT `ch_product_category_ibfk_1` FOREIGN KEY (`product_category_name`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_product_category_ibfk_2` FOREIGN KEY (`product_category_description`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_product_series`
+--
+ALTER TABLE `ch_product_series`
+  ADD CONSTRAINT `ch_product_series_ibfk_1` FOREIGN KEY (`product_series_name`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_product_series_ibfk_2` FOREIGN KEY (`product_series_description`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_product_series_ibfk_3` FOREIGN KEY (`product_series_features`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_product_series_ibfk_4` FOREIGN KEY (`product_series_category`) REFERENCES `ch_product_category` (`product_category_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_product_series_specs`
+--
+ALTER TABLE `ch_product_series_specs`
+  ADD CONSTRAINT `ch_product_series_specs_ibfk_1` FOREIGN KEY (`product_series_spec_title`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_product_series_specs_ibfk_2` FOREIGN KEY (`product_series_id`) REFERENCES `ch_product_series` (`product_series_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_product_specs`
+--
+ALTER TABLE `ch_product_specs`
+  ADD CONSTRAINT `ch_product_specs_ibfk_1` FOREIGN KEY (`product_spec_product_id`) REFERENCES `ch_products` (`product_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_product_specs_ibfk_2` FOREIGN KEY (`product_series_spec_id`) REFERENCES `ch_product_series_specs` (`product_series_spec_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_product_specs_ibfk_3` FOREIGN KEY (`product_spec_value`) REFERENCES `ch_language_identifiers` (`language_identifier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_roles`
+--
+ALTER TABLE `ch_roles`
+  ADD CONSTRAINT `ch_roles_ibfk_1` FOREIGN KEY (`role_category_id`) REFERENCES `ch_role_categories` (`role_category_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ch_user_roles`
+--
+ALTER TABLE `ch_user_roles`
+  ADD CONSTRAINT `ch_user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `ch_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ch_user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `ch_roles` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE;

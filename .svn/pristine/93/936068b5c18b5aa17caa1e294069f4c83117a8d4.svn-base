@@ -1,0 +1,87 @@
+<?php
+class Page_model extends CI_Model {
+	
+	function __construct() {
+		parent::__construct();
+		$this->load->model('component_model');
+		$this->load->model('user_model');
+	}
+	
+	function getAllPages() {
+		$q = $this->db->get(APP_TABLE_PAGES);
+		return $q->result_array();
+	}
+	
+	function getPageInfo($id) {
+		$q = $this->db->get_where(APP_TABLE_PAGES, array("page_id" => $id));
+		return $q->row_array();
+	}
+	
+	function pageExists($id) {
+		$q = $this->db->get_where(APP_TABLE_PAGES, array("page_id" => $id));
+		return ($q->num_rows() > 0);
+	}
+	
+	function pageTitleExists($title) {
+		$nice = url_title($title, 'dash', TRUE);
+		$q = $this->db->get_where(APP_TABLE_PAGES, array("page_nice_name" => $nice));
+		return ($q->num_rows() > 0);
+	}
+	
+	function pageTitleExistsExcept($title, $id) {
+		$nice = url_title($title, 'dash', TRUE);
+		$q = $this->db->get_where(APP_TABLE_PAGES, array("page_nice_name" => $nice, "page_id !=" => $id));
+		return ($q->num_rows() > 0);
+	}
+	
+	function deletePages($pages = array()) {
+		foreach ($pages as $page) {
+			$this->db->delete(APP_TABLE_PAGES, array("page_id" => $page));
+		}
+	}
+	
+	function createPage($title, $meta, $content, $nice, $userId) {
+		
+		$componentId = $this->component_model->createComponent("page-" . $nice);
+		$now = date('Y-m-d H:i:s');
+		
+		$data = array(
+			"page_component_id" => $componentId,
+			"page_title" => $title,
+			"page_meta" => $meta,
+			"page_nice_name" => $nice,
+			"page_content" => $content,
+			"page_timestamp" => $now,
+			"page_created_by" => $userId,
+			"page_creation_time" => $now
+		);
+		
+		$this->db->insert(APP_TABLE_PAGES, $data);
+		return $this->db->insert_id();
+	}
+	
+	function deletePage($id) {
+		$pageInfo = $this->getPageInfo($id);
+		$componentId = $pageInfo["page_component_id"];
+		$this->component_model->deleteComponent($componentId);
+	}
+	
+	function updatePage($id, $title, $meta, $content, $nice, $userId) {
+		$page = $this->getPageInfo($id);
+		$componentId = $page["page_component_id"];
+		$now = date('Y-m-d H:i:s');
+		
+		$data = array(
+			"page_component_id" => $componentId,
+			"page_title" => $title,
+			"page_nice_name" => $nice,
+			"page_meta" => $meta,
+			"page_content" => $content,
+			"page_timestamp" => $now,
+			"page_created_by" => $userId
+		);
+		
+		$this->db->update(APP_TABLE_PAGES, $data, array("page_id" => $id));
+	}
+}
+?>

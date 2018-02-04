@@ -1,0 +1,208 @@
+<?php
+class User_model extends CI_Model {
+	
+	function __construct() {
+		parent::__construct();
+	}
+	
+	function userHasRole($userId, $roleName) {
+		$this->db->select('*')
+					->from(APP_TABLE_ROLES . ' r')
+					->join(APP_TABLE_USER_ROLES . ' x', 'r.role_id = x.role_id')
+					->where(array('r.role_name' => $roleName, 'x.user_id' => $userId));
+		$q = $this->db->get();
+		return ($q->num_rows() > 0);
+	}
+	
+	function currentUserHasAuthority($roleName) {
+		$this->db->select('*')
+					->from(APP_TABLE_ROLES . ' r')
+					->join(APP_TABLE_USER_ROLES . ' x', 'r.role_id = x.role_id')
+					->where(array('r.role_name' => $roleName, 'x.user_id' => $this->session->userdata('user_id')));
+		$q = $this->db->get();
+		return ($q->num_rows() > 0);
+	}
+	
+	function roleCategoryExists($catId) {
+		$q = $this->db->get_where(APP_TABLE_ROLE_CATEGORIES, array("role_category_id" => $catId));
+		return ($q->num_rows() > 0);
+	}
+	
+	function getRoleCategoryInfo($catId) {
+		$q = $this->db->get_where(APP_TABLE_ROLE_CATEGORIES, array("role_category_id" => $catId));
+		return $q->row_array();
+	}
+	
+	function getRoleInfo($roleId) {
+		$q = $this->db->get_where(APP_TABLE_ROLES, array("role_id" => $roleId));
+		return $q->row_array();
+	}
+	
+	function editAuthority($name, $description, $catId) {
+		$data = array('role_category_name' => $name, 
+				'role_category_description' => $description);
+		$this->db->where('role_category_id', $catId);
+		$this->db->update(APP_TABLE_ROLE_CATEGORIES, $data);
+	}
+	
+	function editRole($name, $description, $roleId) {
+		$data = array('role_name' => $name, 
+				'role_description' => $description);
+		$this->db->where('role_id', $roleId);
+		$this->db->update(APP_TABLE_ROLES, $data);
+	}
+	
+	function createRole($name, $description, $catId) {
+		$data = array('role_name' => $name, 
+				'role_description' => $description,
+				'role_category_id' => $catId);
+		$this->db->insert(APP_TABLE_ROLES, $data);
+		return $this->db->insert_id();
+	}
+	
+	function deleteRole($roleId) {
+		$this->db->delete(APP_TABLE_ROLES, array('role_id' => $roleId));
+	}
+	
+	function deleteRoles($roles = array()) {
+		foreach ($roles as $role) {
+			$this->db->delete(APP_TABLE_ROLES, array("role_id" => $role));
+		}
+	}
+	
+	function getCategoryRoles($catId) {
+		$q = $this->db->get_where(APP_TABLE_ROLES, array("role_category_id" => $catId));
+		return $q->result_array();
+	}
+	
+	function getUserInfo($userId) {
+		$q = $this->db->get_where(APP_TABLE_USERS, array("user_id" => $userId));
+		return $q->row_array();
+	}
+	
+	function getUserRoleArray($userId) {
+		$q = $this->db->get_where(APP_TABLE_USER_ROLES, array('user_id' => $userId));
+		$result = array();
+		foreach ($q->result_array() as $row) {
+			$result[] = $row["role_id"];
+		}
+		return $result;
+	}
+	
+	function getAllUsers() {
+		$q = $this->db->get(APP_TABLE_USERS);
+		return $q->result_array();
+	}
+	
+	function removeAllUserRoles($userId) {
+		$this->db->delete(APP_TABLE_USER_ROLES, array('user_id' => $userId));
+	}
+	
+	function addUserRoles($userId, $roles = array()) {
+		$data = array();
+		if (is_array($roles) && count($roles) > 0) {
+			foreach ($roles as $role) {
+				$data[] = array("user_id" => $userId, "role_id" => $role);
+			}
+			$this->db->insert_batch(APP_TABLE_USER_ROLES, $data);
+		}
+	}
+	
+	function userExists($id = 0) {
+		$q = $this->db->get_where(APP_TABLE_USERS, array("user_id" => $id));
+		return ($q->num_rows() > 0);
+	}
+	
+	function isValidUser($username, $password) {
+		$user = $this->db->get_where(APP_TABLE_USERS, 
+					array('user_username' => $username, 'user_password' => $password));
+		if ($user->num_rows() > 0) {
+			return $user->row_array();
+		} else {
+			return false;
+		}
+	}
+	
+	function createSession($userData = array()) {
+		if (is_array($userData) && count($userData) > 0) {
+			$this->session->set_userdata('logged_in', true);
+			$this->session->set_userdata($userData);
+			return true;
+		}
+		return false;
+	}
+	
+	function isLoggedIn() {
+		if ($this->session->userdata('logged_in')) {
+			return true;
+		}
+		return false;
+	}
+	
+	function doesUsernameExist($username) {
+		$q = $this->db->get_where(APP_TABLE_USERS, array('user_username' => $username));
+		return ($q->num_rows() > 0);
+	}
+	
+	function getRoleCategories() {
+		$q = $this->db->get(APP_TABLE_ROLE_CATEGORIES);
+		return $q->result_array();
+	}
+	
+	function getRolesByCategory($catId) {
+		$q = $this->db->get_where(APP_TABLE_ROLES, array('role_category_id' => $catId));
+		return $q->result_array();
+	}
+	
+	function registerUser($username, $password, $fname, $lname) {
+		$data = array('user_username' => $username,
+					'user_password' => $password,
+					'user_firstname' => $fname,
+					'user_lastname' => $lname);
+					
+		$this->db->insert(APP_TABLE_USERS, $data); 
+		return $this->db->insert_id();
+	}
+	
+	function editUser($id,$password, $fname, $lname) {
+		$data = array('user_password' => $password,
+					'user_firstname' => $fname,
+					'user_lastname' => $lname);
+		
+		
+		$this->db->where('user_id', $id);
+		$this->db->update(APP_TABLE_USERS, $data);
+		return $this->db->insert_id();
+	}
+	
+	function deleteUser($id) {
+		$this->db->delete(APP_TABLE_USERS, array('user_id' => $id));
+	}
+	
+	function deleteUsers($users = array()) {
+		foreach ($users as $user) {
+			$this->db->delete(APP_TABLE_USERS, array("user_id" => $user));
+		}
+	}
+	
+	function createAuthority($name, $description) {
+		$this->db->insert(APP_TABLE_ROLE_CATEGORIES, array('role_category_name' => $name, 'role_category_description' => $description));
+		return $this->db->insert_id();
+	}
+	
+	function authorityExists($name) {
+		$q = $this->db->get_where(APP_TABLE_ROLE_CATEGORIES, array('role_category_name' => $name));
+		return $q->num_rows() > 0;
+	}
+	
+	function deleteAuthority($id) {
+		$this->db->delete(APP_TABLE_ROLE_CATEGORIES,array('role_category_id' => $id));
+	}
+	
+	function deleteAuthorities($authorities = array()) {
+		foreach ($authorities as $authority) {
+			$this->db->delete(APP_TABLE_ROLE_CATEGORIES, array("role_category_id" => $authority));
+		}
+	}
+}
+?>

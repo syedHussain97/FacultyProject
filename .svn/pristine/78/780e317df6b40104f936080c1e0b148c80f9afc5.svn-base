@@ -1,0 +1,18 @@
+<?php
+class Component_model extends CI_Model {
+	
+	function __construct() {
+		parent::__construct();
+	}
+	
+	function createComponent($name) {
+		$this->db->insert(APP_TABLE_COMPONENTS, array("component_name" => $name));
+		return $this->db->insert_id();
+	}
+	
+	function deleteComponent($id) {
+		$this->db->delete(APP_TABLE_COMPONENTS, array("component_id" => $id));
+	}
+
+}
+?>

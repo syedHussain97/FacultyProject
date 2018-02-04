@@ -1,0 +1,53 @@
+@charset "UTF-8";
+/* CSS Document */
+
+/* http://codinghazard.com/
+   v0.1 | 20120118
+   License: none (public domain)
+*/
+
+.cen16bold {
+	font-family: "Century Gothic";
+	font-size: 16px;
+	font-weight: bold;
+	color: #FFF;
+}
+.cen16black {
+	font-family: "Century Gothic";
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+}
+.cen12 {
+	font-family: "Century Gothic";
+	font-size: 12px;
+	font-weight: normal;
+	color: #FFF;
+}
+a:link {
+	text-decoration: none;
+	color: #FFF;
+}
+a:visited {
+	text-decoration: none;
+	color: #FFF;
+}
+a:hover {
+	text-decoration: none;
+	color: #000;
+}
+a:active {
+	text-decoration: none;
+	color: #FFF;
+}
+.cen12 {	font-family: "Century Gothic";
+	font-size: 12px;
+	font-weight: normal;
+	color: #FFF;
+}
+.cen15gray {
+	font-family: "Century Gothic";
+	font-size: 15px;
+	font-weight: normal;
+	color: #595959;
+}

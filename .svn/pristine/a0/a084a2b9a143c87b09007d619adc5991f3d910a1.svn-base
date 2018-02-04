@@ -1,0 +1,15 @@
+<?=form_open('admin/create_user_process'); ?>
+<h5>Username</h5>
+<?=form_error('username')?>
+<p><?=form_input('username', set_value('username',''))?></p>
+<h5>Password</h5>
+<?=form_error('password')?>
+<p><?=form_password('password', set_value('password',''))?></p>
+<h5>Firstname</h5>
+<?=form_error('firstname')?>
+<p><?=form_input('firstname', set_value('firstname',''))?></p>
+<h5>Lastname</h5>
+<?=form_error('lastname')?>
+<p><?=form_input('lastname', set_value('lastname',''))?></p>
+
+<input type="submit" value="SignUp" />

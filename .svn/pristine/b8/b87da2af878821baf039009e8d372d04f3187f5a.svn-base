@@ -1,0 +1,1 @@
+<?=anchor('admin/logout', 'logout');?>

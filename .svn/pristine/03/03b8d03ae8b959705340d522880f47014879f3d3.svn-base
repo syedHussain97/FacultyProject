@@ -1,0 +1,81 @@
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/*
+|--------------------------------------------------------------------------
+| File and Directory Modes
+|--------------------------------------------------------------------------
+|
+| These prefs are used when checking and setting modes when working
+| with the file system.  The defaults are fine on servers with proper
+| security, but you may wish (or even need) to change the values in
+| certain environments (Apache running a separate process for each
+| user, PHP under CGI with Apache suEXEC, etc.).  Octal values should
+| always be used to set the mode correctly.
+|
+*/
+define('FILE_READ_MODE', 0644);
+define('FILE_WRITE_MODE', 0666);
+define('DIR_READ_MODE', 0755);
+define('DIR_WRITE_MODE', 0777);
+
+/*
+|--------------------------------------------------------------------------
+| File Stream Modes
+|--------------------------------------------------------------------------
+|
+| These modes are used when working with fopen()/popen()
+|
+*/
+
+define('FOPEN_READ',							'rb');
+define('FOPEN_READ_WRITE',						'r+b');
+define('FOPEN_WRITE_CREATE_DESTRUCTIVE',		'wb'); // truncates existing file data, use with care
+define('FOPEN_READ_WRITE_CREATE_DESTRUCTIVE',	'w+b'); // truncates existing file data, use with care
+define('FOPEN_WRITE_CREATE',					'ab');
+define('FOPEN_READ_WRITE_CREATE',				'a+b');
+define('FOPEN_WRITE_CREATE_STRICT',				'xb');
+define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
+
+/* APP CONSTANTS */
+
+define('DEFAULT_SITE_TITLE', 'CH CMS - Home');
+
+define('JS_FOLDER', 'scripts/');
+define('STYLES_FOLDER', 'styles/');
+
+define('RESULTS_PER_PAGE', 20);
+
+/* db - test */
+
+define('APP_DATABASE_HOSTNAME', 'localhost');
+define('APP_DATABASE_USER', 'root');
+define('APP_DATABASE_PASS', '');
+define('APP_DATABASE_NAME', 'cms');
+
+define('APP_TABLE_COMMENTS','ch_comments');
+define('APP_TABLE_COMPONENTS','ch_components');
+define('APP_TABLE_GALLERY','ch_gallery');
+define('APP_TABLE_PAGES','ch_pages');
+define('APP_TABLE_PICTURES','ch_pictures');
+define('APP_TABLE_ROLES','ch_roles');
+define('APP_TABLE_ROLE_CATEGORIES','ch_role_categories');
+define('APP_TABLE_USERS','ch_users');
+define('APP_TABLE_USER_ROLES','ch_user_roles');
+define('APP_TABLE_LANGUAGES','ch_languages');
+define('APP_TABLE_LANGUAGE_IDENTIFIERS','ch_language_identifiers');
+define('APP_TABLE_LANGUAGE_TEXT','ch_language_text');
+
+define('APP_TABLE_PRODUCT_SERIES','ch_product_series');
+define('APP_TABLE_PRODUCT_CATEGORY','ch_product_category');
+define('APP_TABLE_PRODUCTS','ch_products');
+
+define('APP_TABLE_PRODUCT_SERIES_SPECS','ch_product_series_specs');
+define('APP_TABLE_PRODUCT_SPECS','ch_product_specs');
+
+define('APP_TABLE_FAQS', 'ch_faqs');
+define('APP_TABLE_NEWS', 'ch_news');
+define('APP_TABLE_PRESS_RELEASES', 'ch_press_releases');
+define('APP_TABLE_SUBSCRIBERS', 'ch_subscribers');
+
+/* End of file constants.php */
+/* Location: ./application/config/constants.php */

@@ -1,0 +1,292 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+require(APPPATH.'/libraries/REST_Controller.php');
+
+class Api extends REST_Controller {
+	
+	public function __construct() {
+		parent::__construct();
+		$this->load->model("Language_model");
+		$this->load->model("Product_model");
+		$this->load->model("Settings_model");
+	}
+	
+	public function test_get() {
+		try {
+			$this->Language_model->setLanguage($this->get('locale'));
+			print_r($this->Language_model->getText("SOME_IDENTIFIER"));
+			exit();
+			$this->response(
+					array(
+						"status" => true,
+						"text" => $this->Language_model->getText("SOME_IDENTIFIER")
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function get_all_text_get() {
+		try {
+			$this->setModifiedTime($this->Settings_model->getLastModified());
+			$this->response(
+					array(
+						"status" => true,
+						"data" => $this->Language_model->getAllTextById($this->get('identifier_id'))
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function set_language_text_post() {
+		try {
+			
+			$identifierId = $this->post('identifier_id');
+			$languageId = $this->post('language_id');
+			$textContent = $this->post('text_content');
+			
+			$resultId = $this->Language_model->setText($identifierId, $languageId, $textContent);
+			$this->Settings_model->setLastModifiedToCurrent();
+			$this->response(
+					array(
+						"status" => true,
+						"id" => $resultId
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function update_language_text_post() {
+		try {
+			$identifierId = $this->post('identifier_id');
+			$languageId = $this->post('language_id');
+			$textContent = $this->post('text_content');
+			
+			$this->Language_model->updateText($identifierId, $languageId, $textContent);
+			$this->Settings_model->setLastModifiedToCurrent();
+			$this->response(
+					array(
+						"status" => true
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function product_types_get() {
+		try {
+			$this->setModifiedTime($this->Settings_model->getLastModified());
+			$this->benchmark->mark('code_start');
+			$this->Language_model->setLanguage($this->get('locale'));
+			$this->Product_model->setLanguage($this->get('locale'));
+			$data = $this->Product_model->getProductTypes();
+			$heading = $this->Language_model->getText('PRODUCT_TYPE_HEADING');
+			$this->benchmark->mark('code_end');
+			$this->response(
+					array(
+						"status" => true,
+						"data" => $data,
+						"heading" => $heading,
+						"benchmark" => $this->benchmark->elapsed_time('code_start', 'code_end')
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function product_series_get() {
+		try {
+			$this->setModifiedTime($this->Settings_model->getLastModified());
+			$this->benchmark->mark('code_start');
+			$this->Product_model->setLanguage($this->get('locale'));
+			$heading = $this->Language_model->getText('PRODUCT_SERIES_HEADING');
+			$data = $this->Product_model->getProductSeriesLangByProductType($this->get('type_id'));
+			$this->benchmark->mark('code_end');
+			$this->response(
+					array(
+						"status" => true,
+						"data" => $data,
+						"heading" => $heading,
+						"benchmark" => $this->benchmark->elapsed_time('code_start', 'code_end')
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function product_series_detail_get() {
+		try {
+			$this->setModifiedTime($this->Settings_model->getLastModified());
+			$this->benchmark->mark('code_start');
+			$this->Language_model->setLanguage($this->get('locale'));
+			$this->Product_model->setLanguage($this->get('locale'));
+			$data = $this->Product_model->getProductSeriesById($this->get('series_id'));
+			$detailHeading = $this->Language_model->getText('PRODUCT_SERIES_DETAIL_HEADING');
+			$heading = $data["series_type"];
+			$subheading = $data["series_name"];
+			$this->benchmark->mark('code_end');
+			$this->response(
+					array(
+						"status" => true,
+						"data" => $data,
+						"heading" => $heading,
+						"subheading" => $subheading,
+						"detailheading" => $detailHeading,
+						"cooling_only" => $this->Language_model->getText('COOLING_ONLY'),
+						"cooling_and_heating" => $this->Language_model->getText('COOLING_AND_HEATING'),
+						"benchmark" => $this->benchmark->elapsed_time('code_start', 'code_end')
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function calculator_get() {
+		try {
+			$this->setModifiedTime($this->Settings_model->getLastModified());
+			$this->benchmark->mark('code_start');
+			$this->Language_model->setLanguage($this->get('locale'));
+			$data = array(
+				"enter_button" => $this->Language_model->getText('CALCULATOR_ENTER_BUTTON_TITLE'),
+				"recommended_label" => $this->Language_model->getText('CALCULATOR_RECOMMENDED_LABEL'),
+				"idk_button" => $this->Language_model->getText('CALCULATOR_I_DONT_KNOW_BUTTON_TITLE'),
+				"room_width" => $this->Language_model->getText('CALCULATOR_ROOM_WIDTH_LABEL'),
+				"room_length" => $this->Language_model->getText('CALCULATOR_ROOM_LENGTH_LABEL'),
+				"room_height" => $this->Language_model->getText('CALCULATOR_ROOM_HEIGHT_LABEL'),
+				"help" => $this->Language_model->getText('CALCULATOR_HELP_LABEL'),
+				"in_feet" => $this->Language_model->getText('CALCULATOR_IN_FEET'),
+				"idk_title" => $this->Language_model->getText('IDK_POPUP_TITLE'),
+				"idk_content" => $this->Language_model->getText('IDK_POPUP_CONTENT'),
+			);
+			$this->benchmark->mark('code_end');
+			$this->response(
+					array(
+						"status" => true,
+						"data" => $data,
+						"benchmark" => $this->benchmark->elapsed_time('code_start', 'code_end')
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function product_detail_get() {
+		try {
+			$this->setModifiedTime($this->Settings_model->getLastModified());
+			$this->benchmark->mark('code_start');
+			$this->Language_model->setLanguage($this->get('locale'));
+			$this->Product_model->setLanguage($this->get('locale'));
+			$c = $this->get('cooling');
+			$h = $this->get('heating');
+			$data = $this->Product_model->getProduct($this->get('series_id'),$this->get('size'),$c,$h);
+			$featureHeading = $this->Language_model->getText('PRODUCT_DETAIL_FEATURE_HEADING');
+			$features = $this->Product_model->getProductFeaturesAPI($data["product_id"]);
+			$this->benchmark->mark('code_end');
+			$this->response(
+					array(
+						"status" => true,
+						"data" => $data,
+						"featureheading" => $featureHeading,
+						"features" => $features,
+						"benchmark" => $this->benchmark->elapsed_time('code_start', 'code_end')
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+	public function product_series_detail_size_get() {
+		try {
+			$this->setModifiedTime($this->Settings_model->getLastModified());
+			$this->benchmark->mark('code_start');
+			
+			$c = $this->get('cooling');
+			$h = $this->get('heating');
+			
+			$this->Language_model->setLanguage($this->get('locale'));
+			$this->Product_model->setLanguage($this->get('locale'));
+			$data = $this->Product_model->getProductSeriesById($this->get('series_id'));
+			$sizeData = $this->Product_model->getUniqueSizes($this->get('series_id'), $c, $h);
+			$detailHeading = $this->Language_model->getText('PRODUCT_SERIES_DETAIL_SIZE_HEADING');
+			$heading = $data["series_type"];
+			$subheading = $data["series_name"];
+			$this->benchmark->mark('code_end');
+			$this->response(
+					array(
+						"status" => true,
+						"data" => $data,
+						"sizedata" => $sizeData,
+						"heading" => $heading,
+						"subheading" => $subheading,
+						"detailheading" => $detailHeading,
+						"idkButtonLabel" => $this->Language_model->getText('BUTTON_I_DONT_KNOW'),
+						"benchmark" => $this->benchmark->elapsed_time('code_start', 'code_end')
+					), 200
+				);
+		} catch (Exception $e) {
+			$this->response(
+					array(
+						"status" => false,
+						"error" => $e->getMessage()
+					) , 400
+				);
+		}
+	}
+	
+}

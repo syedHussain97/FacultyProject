@@ -1,0 +1,69 @@
+<?php
+class Language_model extends CI_Model {
+	
+	function __construct() {
+		parent::__construct();
+	}
+	
+	function getAllLanguages() {
+		$q = $this->db->get(APP_TABLE_LANGUAGES);
+		return $q->result_array();
+	}
+	
+	function createIdentifier($name) {
+		$this->db->insert(APP_TABLE_LANGUAGE_IDENTIFIERS, array("language_identifier_name" => $name));
+		return $this->db->insert_id();
+	}
+	
+	function getLanguageText($identifierId, $languageId) {
+		$q = $this->db->get_where(APP_TABLE_LANGUAGE_TEXT, array("language_text_language_id" => $languageId, "language_text_identifier" => $identifierId));
+		if ($q->num_rows() > 0) {
+			return $q->row_array();
+		} else {
+			return false;
+		}
+	}
+	
+	function createLanguageText($identifierId, $languageId, $content) {
+		$this->db->insert(APP_TABLE_LANGUAGE_TEXT, array("language_text_language_id" => $languageId, "language_text_identifier" => $identifierId, "language_text_content" => $content));
+		return $this->db->insert_id();
+	}
+	
+	function createOrUpdateLanguageText($identifierId, $languageId, $content) {
+		$lText = $this->getLanguageText($identifierId, $languageId);
+		if ($lText) {
+			$this->db->update(APP_TABLE_LANGUAGE_TEXT, array("language_text_content" => $content), array("language_text_id" => $lText["language_text_id"]));
+			return $lText["language_text_id"];
+		} else {
+			$this->db->insert(APP_TABLE_LANGUAGE_TEXT, array("language_text_language_id" => $languageId, "language_text_identifier" => $identifierId, "language_text_content" => $content));
+			return $this->db->insert_id();
+		}
+	}
+	
+	function getText($languageId, $identiferId) {
+		//$q = $this->db->select('CONVERT(language_text_content USING utf8) AS x')->from(APP_TABLE_LANGUAGE_TEXT)->where(array("language_text_language_id" => $languageId, "language_text_identifier" => $identiferId))->get();
+		$q = $this->db->get_where(APP_TABLE_LANGUAGE_TEXT, array("language_text_language_id" => $languageId, "language_text_identifier" => $identiferId));
+		if ($q->num_rows() > 0) {
+			$x = $q->row_array();
+			return $x["language_text_content"];
+		} else {
+			return "UNDEFINED";
+		}
+	}
+	
+	function getTextForAllLanguages($identiferId) {
+		$q = $this->db->get_where(APP_TABLE_LANGUAGE_TEXT, array("language_text_identifier" => $identiferId));
+		if ($q->num_rows() > 0) {
+			$field = "";
+			foreach ($q->result_array() as $row) {
+				$field .= $row["language_text_content"] . " / ";
+			}
+			$field = trim($field);
+			return substr($field, 0, strlen($field) -2);
+		} else {
+			return "UNDEFINED";
+		}
+	}
+	
+}
+?>

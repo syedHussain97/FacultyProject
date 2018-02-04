@@ -1,0 +1,151 @@
+<?php echo form_open_multipart('admin/add_product_process');?>
+<table width="975" cellspacing="0" cellpadding="0" border="0" align="center">
+      <tbody><tr>
+        <td valign="middle" height="50" bgcolor="#CCCCCC" align="center"><span class="cen16black">Add  Products</span></td>
+      </tr>
+      <tr>
+        <td valign="top" bgcolor="#E8E8E8" align="center"><table width="975" cellspacing="0" cellpadding="0" border="0">
+          <tbody><tr>
+            <td width="51">&nbsp;</td>
+            <td width="320" height="40">&nbsp;</td>
+            <td width="51">&nbsp;</td>
+            <td width="502">&nbsp;</td>
+            <td width="51">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td valign="top" height="500" align="center"><table width="320" cellspacing="0" cellpadding="0" border="0">
+              <tbody><tr>
+                <td valign="middle" height="30" align="left" class="cen15gray">Product Model</td>
+              </tr>
+              <tr>
+                <td height="30"><table width="320" cellspacing="0" cellpadding="0" border="0">
+                  <tbody><tr>
+                    <td valign="middle" align="left"><?=form_input('model','');?></td>
+                    <td width="30" valign="middle" height="30" align="left"></td>
+                  </tr>
+                </tbody></table></td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left">&nbsp;</td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left" class="cen15gray">Product Series</td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left"><table width="320" cellspacing="0" cellpadding="0" border="0">
+                  <tbody><tr>
+                    <td valign="middle" align="left"><?=form_dropdown('series', $series, '');?></td>
+                    <td width="30" valign="middle" height="30" align="left"></td>
+                  </tr>
+                </tbody></table></td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left">&nbsp;</td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left" class="cen15gray">Cooling or Cooling &amp; Heating</td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left"><table width="320" cellspacing="0" cellpadding="0" border="0">
+                  <tbody><tr>
+                    <td valign="middle" align="left">
+						Cooling <input type="checkbox" name="cooling" value="<?="YES"?>" <?php echo set_checkbox('cooling', '1'); ?> />
+						Heating <input type="checkbox" name="heating" value="<?="YES"?>" <?php echo set_checkbox('heating', '1'); ?> />
+					</td>
+                    <td width="30" valign="middle" height="30" align="left"></td>
+                  </tr>
+                </tbody></table></td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left">&nbsp;</td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left" class="cen15gray">Product BTU</td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left"><table width="320" cellspacing="0" cellpadding="0" border="0">
+                  <tbody><tr>
+                    <td valign="middle" align="left"><?=form_input('size','');?></td>
+                    <td width="30" valign="middle" height="30" align="left"></td>
+                  </tr>
+                </tbody></table></td>
+              </tr>
+              <tr>
+                <td valign="middle" height="30" align="left">&nbsp;</td>
+              </tr>
+	              <tr>
+	                <td valign="middle" height="30" align="left" class="cen15gray">Description</td>
+	              </tr>
+	              <tr>
+	                <td valign="middle" align="left"><?=form_dropdown('description', $identifiers, '');?></td>
+	              </tr>
+	              <tr>
+	                <td valign="middle" height="20" align="left">&nbsp;</td>
+	              </tr>
+		              <tr>
+		                <td valign="middle" height="30" align="left" class="cen15gray">Tagline</td>
+		              </tr>
+		              <tr>
+		                <td valign="middle" align="left"><?=form_dropdown('tagline', $identifiers, '');?></td>
+		              </tr>
+		              <tr>
+		                <td valign="middle" height="20" align="left">&nbsp;</td>
+		              </tr>
+              </tbody></table></td>
+            <td>&nbsp;</td>
+            <td valign="top" align="left"><table width="502" cellspacing="0" cellpadding="0" border="0">
+              <tbody><tr>
+                <td height="30" class="cen15gray">Product Image</td>
+              </tr>
+              <tr>
+                <td height="25">&nbsp;</td>
+              </tr>
+              <tr>
+                <td valign="top" align="left"><table width="502" cellspacing="0" cellpadding="0" border="0">
+                  <tbody><tr>
+                    <td width="90" height="90" bgcolor="#CCCCCC">&nbsp;</td>
+                    <td width="20" valign="top" align="left">&nbsp;</td>
+                    <td valign="top" align="left"><table width="392" cellspacing="0" cellpadding="0" border="0">
+                      <tbody><tr>
+                        <td height="28" class="cen15gray">Large Image</td>
+                      </tr>
+                      <tr>
+                        <td height="28"><input type="file" name="userfile" /></td>
+                      </tr>
+                      <tr>
+                        <td valign="bottom" height="35" align="right"><table width="392" cellspacing="0" cellpadding="0" border="0" align="center">
+                          <tbody><tr>
+                            <td width="186">&nbsp;</td>
+                            <td width="100" valign="middle" align="center"></td>
+                            <td width="6" valign="middle" align="center"></td>
+                            <td width="100" valign="middle" height="29" align="center"></td>
+                          </tr>
+                        </tbody></table></td>
+                      </tr>
+                    </tbody></table></td>
+                  </tr>
+                </tbody></table></td>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                
+              </tr>
+              <tr>
+                <td valign="top" height="200" align="left"></td>
+              </tr>
+              <tr>
+                <td valign="top" height="40" align="right"><?=form_submit('submit', 'Save');?></td>
+              </tr>
+              <tr>
+                <td valign="top" height="30" align="right">&nbsp;</td>
+              </tr>
+            </tbody></table></td>
+            <td>&nbsp;</td>
+          </tr>
+        </tbody></table></td>
+      </tr>
+    </tbody></table>
+<?php echo form_close();?>

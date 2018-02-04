@@ -1,0 +1,1370 @@
+<?php
+
+if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+require_once('base.php');
+
+class Admin extends Base {
+	
+	public function __construct() {
+		parent::__construct();
+		$this->load->model('user_model');
+		$this->load->model('page_model');
+		$this->load->model('language_model');
+		$this->load->model('product_model');
+		$this->load->model('faq_model');
+		$this->load->model('news_model');
+		$this->load->model('press_model');
+		$this->load->model('subscription_model');
+		$this->load->model('helper_model');
+	}
+	
+	public function index() {
+		if ($this->user_model->isLoggedIn()) {
+		
+			$this->set_title("Administration");
+			$this->add_to_left("admin/","sidebar", array("section" => "DB"));
+			$this->add_to_center("admin/","index");
+			$this->load_lc_template_admin();
+		} else {
+			redirect('admin/login', 'refresh');
+		}
+	}
+	
+	public function login() {
+		$this->load->view('login');
+	}
+	
+	public function logout() {
+		$this->session->sess_destroy();
+		redirect('admin');
+	}
+	
+	public function authenticate() {
+		if ($this->user_model->isLoggedIn()) {
+			redirect('admin');
+		} else {
+			$this->form_validation->set_rules('username', 'Username', 'required');
+			$this->form_validation->set_rules('password', 'Password', 'required');
+			
+			if ($this->form_validation->run() == FALSE) {
+				$this->login();
+			} else {
+				$username = trim($this->input->post('username'));
+				$password = md5($this->input->post('password'));
+				$result = $this->user_model->isValidUser($username, $password);			
+				if ($result) {
+					$this->user_model->createSession($result);
+					redirect('admin', 'refresh');
+				} else {
+					$this->session->set_flashdata('error', 'Invalid username or password!');
+					redirect('admin/login', 'refresh');
+				}
+			}
+		}
+	}
+	
+	public function roles($cat = 0) {
+		if (!$this->user_model->roleCategoryExists($cat) || !$this->user_model->isLoggedIn())
+			redirect('admin');
+		$catInfo = $this->user_model->getRoleCategoryInfo($cat);
+		$catRoles = $this->user_model->getCategoryRoles($cat);
+		$this->set_title("Authority Roles");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "AUTH"));
+		$this->add_to_center("admin/","manage_roles", array("cat" => $catInfo, "roles" => $catRoles));
+		$this->load_lc_template_admin();
+	}
+	
+	public function create_role_process($catId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$this->form_validation->set_rules('name', 'Name', 
+			'trim|required|min_length[4]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('description', 'Description', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			$this->roles($catId);
+		} else {
+			try {
+				$name = trim($this->input->post('name'));
+				$description = trim($this->input->post('description'));
+				
+					$id = $this->user_model->createRole($name, $description, $catId);
+					redirect('admin/roles/' . $catId);
+					
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/roles/' . $catId, 'refresh');
+			}
+		}
+	}
+	
+	public function edit_role($roleId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$roles = $this->user_model->getRoleInfo($roleId);
+		$this->set_title("Edit Roles");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "AUTH"));
+		$this->add_to_center("admin/","edit_roles", array("roles" => $roles, "roleId" => $roleId));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_role_process($roleId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->form_validation->set_rules('name', 'Name', 
+			'trim|required|min_length[4]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('description', 'Description', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			$this->edit_role();
+		} else {
+			try {
+				$name = trim($this->input->post('name'));
+				$description = trim($this->input->post('description'));
+				$catId = $this->input->post('role_category_id');
+				
+				$id = $this->user_model->editRole($name, $description, $roleId);
+				redirect('admin/roles/' . $catId);
+					
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/roles', 'refresh');
+			}
+		}
+	}
+	
+	public function delete_role($roleId = 0, $catId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->user_model->deleteRole($roleId);
+		redirect('admin/roles/' .$catId);
+	}
+	
+	public function role_bulk_process($catId = 0) {
+		$roles = $this->input->post('role');
+		$action = $this->input->post('action');
+		if (trim($action) == "delete" && count($roles) > 0) {
+			$this->user_model->deleteRoles($roles);
+			redirect('admin/roles/' . $catId);
+		} else {
+			redirect('admin/roles/' . $catId);
+		}
+	}
+	
+	public function authorities() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$categories = $this->user_model->getRoleCategories();
+		$this->set_title("Authority");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "AUTH"));
+		$this->add_to_center("admin/","user_authorities", array("categories" => $categories));
+		$this->load_lc_template_admin();
+	}
+	
+	public function create_authority_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->form_validation->set_rules('name', 'Name', 
+			'trim|required|min_length[4]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('description', 'Description', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			$this->authorities();
+		} else {
+			try {
+				$name = trim($this->input->post('name'));
+				$description = trim($this->input->post('description'));
+				if ($this->user_model->authorityExists($name)) {
+					throw new Exception("Another page with the same title already exists");
+				} else {
+					$id = $this->user_model->createAuthority($name, $description);
+					redirect('admin/authorities');
+				}
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/authorities', 'refresh');
+			}
+		}
+	}
+	
+	public function edit_authority($catId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$category = $this->user_model->getRoleCategoryInfo($catId);
+		//var_dump($category);
+		$this->set_title("Authority");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "AUTH"));
+		$this->add_to_center("admin/","edit_authorities", array("cat" => $category, "catid" => $catId));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_authority_process($catId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->form_validation->set_rules('name', 'Name', 
+			'trim|required|min_length[4]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('description', 'Description', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			$this->edit_authority();
+		} else {
+			try {
+				$name = trim($this->input->post('name'));
+				$description = trim($this->input->post('description'));
+				
+					$id = $this->user_model->editAuthority($name, $description, $catId);
+					redirect('admin/authorities');
+					
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/authorities', 'refresh');
+			}
+		}
+	}
+	
+	public function delete_authority($id = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$this->user_model->deleteAuthority($id);
+		redirect('admin/authorities');
+	}
+	
+	public function news() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$news = $this->news_model->getAllNews();
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($news); $i++) {
+			$user = $this->user_model->getUserInfo($news[$i]["news_created_by"]);
+			$news[$i]["created_by"] = $user["user_username"];
+			foreach ($languages as $lang) {
+				$news[$i]["title_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $news[$i]["news_title"]);
+				$news[$i]["content_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $news[$i]["news_content"]);
+			}
+		}
+		$this->set_title("News Management");
+		$this->add_to_left("admin/","sidebar", array("section" => "NEWS", "selection" => "MNEWS"));
+		$this->add_to_center("admin/","news", array("news" => $news, "languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function news_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('content_'.$lang["language_code"], 'content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->news();
+		} else {
+			try {
+				$titleIdentifierId = $this->language_model->createIdentifier("");
+				$contentIdentifierId = $this->language_model->createIdentifier("");
+				$this->db->trans_start();
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$content = trim($this->input->post('content_'.$lang["language_code"]));
+
+					$this->language_model->createLanguageText($titleIdentifierId, $lang["language_id"], $title);
+					$this->language_model->createLanguageText($contentIdentifierId, $lang["language_id"], $content);
+				}
+				$id = $this->news_model->createNews($titleIdentifierId, $contentIdentifierId, $this->session->userdata('user_id'));
+				$this->db->trans_complete();
+				redirect('admin/news');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/news', 'refresh');
+			}
+		}
+	}
+	
+	public function reorder_faq() {
+		parse_str($this->input->post('faqs'), $orders);
+		$orders = $orders["faq"];
+		for ($i=0; $i<count($orders); $i++) {
+			$this->faq_model->orderFAQ($orders[$i], $i+1);
+		}
+	}
+	
+	public function reorder_series_specs() {
+		parse_str($this->input->post('specs'), $orders);
+		$orders = $orders["specs"];
+		print_r($orders);
+		for ($i=0; $i<count($orders); $i++) {
+			$this->product_model->orderSeriesSpecs($orders[$i], $i+1);
+		}
+	}
+	
+	public function faq() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$faqs = $this->faq_model->getAllFAQs();
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($faqs); $i++) {
+			foreach ($languages as $lang) {
+				$faqs[$i]["question_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $faqs[$i]["faq_question"]);
+				$faqs[$i]["answer_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $faqs[$i]["faq_answer"]);
+			}
+		}
+		$this->set_title("FAQ Management");
+		$this->add_to_left("admin/","sidebar", array("section" => "FAQ", "selection" => "MFAQ"));
+		$this->add_to_center("admin/","faqs", array("faqs" => $faqs, "languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function subscribers($start = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$totalRows = $this->subscription_model->countAllSubscribers();
+		
+		if (intval($start) < 0 && intval($start) >= $totalRows)
+			$start = 0;
+		
+		$subscribers = $this->subscription_model->getSubscribers($start, RESULTS_PER_PAGE);
+		$this->load->library('pagination');
+		$baseURL = base_url('index.php/admin/subscribers') . '/';
+		$this->pagination->initialize($this->helper_model->getPaginationConfig($baseURL, RESULTS_PER_PAGE, $totalRows));
+
+		$this->set_title("Subscription Management");
+		$this->add_to_left("admin/","sidebar", array("section" => "SUBS", "selection" => "MSUBS"));
+		$this->add_to_center("admin/","subscribers", array("subscribers" => $subscribers));
+		$this->load_lc_template_admin();
+	}
+	
+	public function press_releases() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$releases = $this->press_model->getAllPressReleases();
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($releases); $i++) {
+			foreach ($languages as $lang) {
+				$releases[$i]["title_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $releases[$i]["press_release_title"]);
+				$releases[$i]["content_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $releases[$i]["press_release_content"]);
+			}
+		}
+		$this->set_title("Press Release Management");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRESS", "selection" => "MPRESS"));
+		$this->add_to_center("admin/","press", array("releases" => $releases, "languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function press_releases_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('content_'.$lang["language_code"], 'content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->press_releases();
+		} else {
+			try {
+				$titleIdentifierId = $this->language_model->createIdentifier("");
+				$contentIdentifierId = $this->language_model->createIdentifier("");
+				$this->db->trans_start();
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$content = trim($this->input->post('content_'.$lang["language_code"]));
+
+					$this->language_model->createLanguageText($titleIdentifierId, $lang["language_id"], $title);
+					$this->language_model->createLanguageText($contentIdentifierId, $lang["language_id"], $content);
+				}
+				$id = $this->press_model->createPressRelease($titleIdentifierId, $contentIdentifierId, $this->session->userdata('user_id'));
+				$this->db->trans_complete();
+				redirect('admin/press_releases');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/press_releases', 'refresh');
+			}
+		}
+	}
+	
+	public function faq_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('question_'.$lang["language_code"], 'Question', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('answer_'.$lang["language_code"], 'Answer', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->faq();
+		} else {
+			try {
+				$questionIdentifierId = $this->language_model->createIdentifier("");
+				$answerIdentifierId = $this->language_model->createIdentifier("");
+				$this->db->trans_start();
+				foreach ($languages as $lang) {
+					$question = trim($this->input->post('question_'.$lang["language_code"]));
+					$answer = trim($this->input->post('answer_'.$lang["language_code"]));
+
+					$this->language_model->createLanguageText($questionIdentifierId, $lang["language_id"], $question);
+					$this->language_model->createLanguageText($answerIdentifierId, $lang["language_id"], $answer);
+				}
+				$id = $this->faq_model->createFAQ($questionIdentifierId, $answerIdentifierId);
+				$this->db->trans_complete();
+				redirect('admin/faq');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/faq', 'refresh');
+			}
+		}
+	}
+	
+	public function product_categories() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$categories = $this->product_model->getAllProductCategories();
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($categories); $i++) {
+			foreach ($languages as $lang) {
+				$categories[$i]["name_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $categories[$i]["product_category_name"]);
+				$categories[$i]["description_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $categories[$i]["product_category_description"]);
+			}
+		}
+		$this->set_title("Product Categories");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "MPRCAT"));
+		$this->add_to_center("admin/","product_categories", array("categories" => $categories, "languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function create_product_category_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('description_'.$lang["language_code"], 'Content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->product_categories();
+		} else {
+			try {
+				
+				$titleIdentifierId = $this->language_model->createIdentifier("");
+				$descriptionIdentifierId = $this->language_model->createIdentifier("");
+				
+				$this->db->trans_start();
+				
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$desc = trim($this->input->post('description_'.$lang["language_code"]));
+					if ($this->product_model->productCategoryTitleExists($title, $lang["language_id"])) {
+						throw new Exception("Another category with the same title (" . $title . ") already exists in language (" . $lang["language_name"] . ")");
+					}
+					$this->language_model->createLanguageText($titleIdentifierId, $lang["language_id"], $title);
+					$this->language_model->createLanguageText($descriptionIdentifierId, $lang["language_id"], $desc);
+				}
+				
+				$id = $this->product_model->createProductCategory($titleIdentifierId, $descriptionIdentifierId);
+				$this->db->trans_complete();
+				redirect('admin/product_categories');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/product_categories', 'refresh');
+			}
+		}
+	}
+	
+	public function edit_product_category($catId = 0) {
+		if (!$this->product_model->productCategoryExist($catId) || !$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+			$categories = $this->product_model->getProductCategoryInfo($catId);
+			$languages = $this->language_model->getAllLanguages();
+				foreach ($languages as $lang) {
+					$categories["name_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $categories["product_category_name"]);
+					$categories["description_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $categories["product_category_description"]);
+				}
+		$this->set_title("Edit Product Categories");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => 
+		"MPRCAT"));
+		$this->add_to_center("admin/","edit_product_categories", array("categories" => $categories, 
+		"languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_product_category_process($catId = 0) {
+		if (!$this->product_model->productCategoryExist($catId) || !$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$categories = $this->product_model->getProductCategoryInfo($catId);
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('description_'.$lang["language_code"], 'Content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->edit_product_categories($catId);
+		} else {
+			try {				
+				$this->db->trans_start();
+				
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$desc = trim($this->input->post('description_'.$lang["language_code"]));
+					if ($this->product_model->productCategoryTitleExists($title, $lang["language_id"], $catId)) {
+						throw new Exception("Another category with the same title (" . $title . ") already exists in language (" . $lang["language_name"] . ")");
+					}
+					$this->language_model->createOrUpdateLanguageText($categories['product_category_name'], 
+					$lang["language_id"], $title);
+				$this->language_model->createOrUpdateLanguageText($categories['product_category_description'], 
+					$lang["language_id"], $desc);
+				}
+				
+				$id = $this->product_model->updateProductCategory($categories['product_category_name'], $categories['product_category_description'],$catId);
+				$this->db->trans_complete();
+				redirect('admin/product_categories');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/edit_product_category/' . $catId, 'refresh');
+			}
+		}
+	}
+	
+	public function delete_product_category($catId = 0) {
+		if (!$this->product_model->productCategoryExist($catId) || !$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$this->product_model->deleteProductCategory($catId);
+		redirect('admin/product_categories');
+	}
+	
+	public function category_bulk_process() {
+		$cat = $this->input->post('cat');
+		$action = $this->input->post('action');
+		if (trim($action) == "delete" && count($cat) > 0) {
+			
+			if ($this->user_model->currentUserHasAuthority('PAGE_DELETE')) {
+				$this->product_model->deleteBulkCategories($cat);
+				redirect('admin/product_categories');
+			} else {
+				redirect('admin/unauthorised');
+			}
+		} else {
+			redirect('admin/product_categories');
+		}
+	}
+	
+	public function get_series($catId) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		header('Content-Type: application/x-json; charset=utf-8');
+		$ser_base = $this->product_model->getSeriesForCategory($catId);
+		$series = array();
+		foreach ($ser_base as $ser) {
+			$series[$ser["product_series_id"]] = $this->language_model->getTextForAllLanguages($ser["product_series_name"]);
+		}
+		echo(json_encode($series));
+	}
+	
+	public function add_product() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$languages = $this->language_model->getAllLanguages();
+		$cat_base = $this->product_model->getAllProductCategories();
+		$categories = array();
+		foreach ($cat_base as $cat) {
+			$categories[$cat["product_category_id"]] = $this->language_model->getTextForAllLanguages($cat["product_category_name"]);
+		}
+		$this->set_title("Add Product");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "CPRODUCTS"));
+		$this->add_to_center("admin/","add_products", array("languages" => $languages, "categories" => $categories, "series" => array('' => "Please select a category")));
+		$this->load_lc_template_admin();
+	}
+	
+	public function product_specs($productId) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productExists($productId))
+			redirect('admin');
+		$product = $this->product_model->getProductInfo($productId);
+		$specs = $this->product_model->getProductSeriesSpecs($product["product_series"]);
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($specs); $i++) {
+			$valId = $this->product_model->getProductSpecValue($productId, $specs[$i]["product_series_spec_id"]);
+			foreach ($languages as $lang) {
+				$value = $this->language_model->getText($lang["language_id"], $valId);
+				if ($value == "UNDEFINED") $value = "";
+				$specs[$i]["title_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $specs[$i]["product_series_spec_title"]);
+				$specs[$i]["value_".$lang["language_code"]] = $value;
+			}
+		}
+		$this->set_title("Product Specifications");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "CPRODUCTS"));
+		$this->add_to_center("admin/","product_specs", array("languages" => $languages, "specs" => $specs, "product" => $product));
+		$this->load_lc_template_admin();
+	}
+	
+	public function product_specs_process($pid) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productExists($pid))
+			redirect('admin');
+			
+		$product = $this->product_model->getProductInfo($pid);
+		$specs = $this->product_model->getProductSeriesSpecs($product["product_series"]);
+		$languages = $this->language_model->getAllLanguages();
+		
+		foreach ($specs as $spec) {
+			$specId = $spec["product_series_spec_id"];
+			$pSpec = $this->product_model->getProductSpec($pid, $specId);
+			if (!$pSpec) {
+				$valueIdentifierId = $this->language_model->createIdentifier("");
+			} else {
+				$valueIdentifierId = $pSpec["product_spec_value"];
+			}
+			foreach ($languages as $lang) {
+				$value = trim($this->input->post($specId . '_value_'.$lang["language_code"]));
+				$this->language_model->createOrUpdateLanguageText($valueIdentifierId, $lang["language_id"], $value);
+			}
+			$this->product_model->setProductSpecValue($pid, $specId, $valueIdentifierId);
+		}
+		redirect('admin/product_specs/' . $pid, 'refresh');
+	}
+	
+	public function add_product_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('description_'.$lang["language_code"], 'Description', 'required');
+			$this->form_validation->set_rules('model', 'Model', 'required');
+			$this->form_validation->set_rules('category', 'Category', 'required');
+			$this->form_validation->set_rules('series', 'Series', 'required');
+		
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->add_product();
+		} else {
+			try {
+				
+				$descriptionIdentifierId = $this->language_model->createIdentifier("");
+				$seriesId = $this->input->post('series');
+				$model = $this->input->post('model');
+				
+				$this->db->trans_start();
+				
+				foreach ($languages as $lang) {
+					$desc = trim($this->input->post('description_'.$lang["language_code"]));
+					$this->language_model->createLanguageText($descriptionIdentifierId, $lang["language_id"], $desc);
+				}
+				
+				$id = $this->product_model->addProduct($model, $seriesId, $descriptionIdentifierId);
+				$this->db->trans_complete();
+				redirect('admin/products/'.$seriesId);
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/add_product', 'refresh');
+			}
+		}
+	}
+	
+	public function products($seriesId = -1) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesExists($seriesId))
+			redirect('admin');
+		
+		$products = $this->product_model->getProductsForSeries($seriesId);
+		$series = $this->product_model->getProductSeriesInfo($seriesId);
+		$series["generic_title"] = $this->language_model->getTextForAllLanguages($series["product_series_name"]);
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($products); $i++) {
+			foreach ($languages as $lang) {
+				$products[$i]["description_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $products[$i]["product_description"]);
+			}
+		}
+		$this->set_title("Products");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "MPRSER"));
+		$this->add_to_center("admin/","list_products", array("products" => $products, "series" => $series, "languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_product($pId = 0, $seriesId = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesExists($seriesId))
+			redirect('admin');
+		
+		$products = $this->product_model->getProductForSeriesById($seriesId, $pId);
+		$series = $this->product_model->getProductSeriesInfo($seriesId);
+		$series["generic_title"] = $this->language_model->getTextForAllLanguages($series["product_series_name"]);
+		$languages = $this->language_model->getAllLanguages();
+		
+		$ser_base = $this->product_model->getSeriesForCategory($series["product_series_category"]);
+		$series_drop = array();
+		foreach ($ser_base as $ser) {
+			$series_drop[$ser["product_series_id"]] = $this->language_model->getTextForAllLanguages($ser["product_series_name"]);
+		}
+		foreach ($languages as $lang) {
+			$products["description_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $products["product_description"]);
+		}
+		$this->set_title("Edit Product");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "CPRODUCTS"));
+		$this->add_to_center("admin/","edit_product", array("products" => $products,"languages" => $languages, "series" => $series, "series_drop" => $series_drop));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_product_process($seriesId = 0, $pId = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesExists($pId))
+			redirect('admin');
+		
+		$languages = $this->language_model->getAllLanguages();
+		$products = $this->product_model->getProductForSeriesById($seriesId, $pId);
+		
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('description_'.$lang["language_code"], 'Content', 'required');
+			$this->form_validation->set_rules('model', 'Content', 'required');
+			$this->form_validation->set_rules('series', 'Content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->edit_product($seriesId, $pId);
+		} else {
+			try {
+				$model = $this->input->post('model');
+				$newSeries = $this->input->post('series');
+				$this->db->trans_start();
+				foreach ($languages as $lang) {
+					$desc = trim($this->input->post('description_'.$lang["language_code"]));
+					$this->language_model->createOrUpdateLanguageText($products['product_description'], $lang["language_id"], $desc);
+				}
+				$id = $this->product_model->editProduct($pId, $model, $newSeries, $products['product_description']);
+				$this->db->trans_complete();
+				redirect('admin/products/'.$seriesId);
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/products/', $seriesId, 'refresh');
+			}
+		}
+	}
+	
+	public function delete_product($pId = 0, $seriesId = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productExists($pId))
+			redirect('admin');
+		
+		$this->product_model->deleteProduct($pId, $seriesId);
+		redirect('admin/products/'.$seriesId);
+	}
+	
+	public function delete_product_bulk_process($seriesId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$products = $this->input->post('products');
+		$action = $this->input->post('action');
+		if (trim($action) == "delete" && count($products) > 0) {
+			
+			if ($this->user_model->currentUserHasAuthority('PAGE_DELETE')) {
+				$this->product_model->deleteBulkProducts($products);
+				redirect('admin/products/'.$seriesId);
+			} else {
+				redirect('admin/unauthorised');
+			}
+		} else {
+			redirect('admin/products/'.$seriesId);
+		}
+	}
+	
+	public function create_product_series_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('description_'.$lang["language_code"], 'Content', 'required');
+			$this->form_validation->set_rules('features_'.$lang["language_code"], 'Content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->product_series();
+		} else {
+			try {
+				
+				$titleIdentifierId = $this->language_model->createIdentifier("");
+				$descriptionIdentifierId = $this->language_model->createIdentifier("");
+				$featuresIdentifierId = $this->language_model->createIdentifier("");
+				$categoryId = $this->input->post('category');
+				
+				$this->db->trans_start();
+				
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$desc = trim($this->input->post('description_'.$lang["language_code"]));
+					$features = trim($this->input->post('features_'.$lang["language_code"]));
+					if ($this->product_model->productSeriesTitleExists($title, $lang["language_id"])) {
+						throw new Exception("Another series with the same title (" . $title . ") already exists in language (" . $lang["language_name"] . ")");
+					}
+					$this->language_model->createLanguageText($titleIdentifierId, $lang["language_id"], $title);
+					$this->language_model->createLanguageText($descriptionIdentifierId, $lang["language_id"], $desc);
+					$this->language_model->createLanguageText($featuresIdentifierId, $lang["language_id"], $features);
+				}
+				
+				$id = $this->product_model->createProductSeries($titleIdentifierId, $descriptionIdentifierId, $featuresIdentifierId, $categoryId);
+				$this->db->trans_complete();
+				redirect('admin/product_series');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/product_series', 'refresh');
+			}
+		}
+	}
+
+	public function product_series() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$series = $this->product_model->getAllProductSeries();
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($series); $i++) {
+			$category = $this->product_model->getProductCategoryInfo($series[$i]["product_series_category"]);
+			foreach ($languages as $lang) {
+				$series[$i]["name_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $series[$i]["product_series_name"]);
+				$series[$i]["description_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $series[$i]["product_series_description"]);
+				$series[$i]["features_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $series[$i]["product_series_features"]);
+				
+				$series[$i]["cat_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $category["product_category_name"]);
+			}
+			$series[$i]["product_count"] = $this->product_model->countProducts($series[$i]["product_series_id"]);
+		}
+		$cat_base = $this->product_model->getAllProductCategories();
+		$categories = array();
+		foreach ($cat_base as $cat) {
+			$categories[$cat["product_category_id"]] = $this->language_model->getTextForAllLanguages($cat["product_category_name"]);
+		}
+		$this->set_title("Product Series");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "MPRSER"));
+		$this->add_to_center("admin/","product_series", array("series" => $series, "languages" => $languages, "categories" => $categories));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_product_series($serId = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesExists($serId))
+			redirect('admin');
+			
+		$series = $this->product_model->getProductSeriesInfo($serId);
+		$languages = $this->language_model->getAllLanguages();
+		
+			$category = $this->product_model->getProductCategoryInfo($series["product_series_category"]);
+			foreach ($languages as $lang) {
+				$series["name_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $series["product_series_name"]);
+				$series["description_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $series["product_series_description"]);
+				$series["features_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $series["product_series_features"]);
+				
+				$series["cat_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $category["product_category_name"]);
+			}
+		$cat_base = $this->product_model->getAllProductCategories();
+		$categories = array();
+		foreach ($cat_base as $cat) {
+			$categories[$cat["product_category_id"]] = $this->language_model->getTextForAllLanguages($cat["product_category_name"]);
+		}
+		$this->set_title("Product Series");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "MPRSER"));
+		$this->add_to_center("admin/","edit_product_series", array("series" => $series, "languages" => $languages, "categories" => $categories));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_product_series_process($serId) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesExists($serId))
+			redirect('admin');
+		
+		$languages = $this->language_model->getAllLanguages();
+		$series = $this->product_model->getProductSeriesInfo($serId);
+		
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('description_'.$lang["language_code"], 'Content', 'required');
+			$this->form_validation->set_rules('features_'.$lang["language_code"], 'Content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->product_series($serId);
+		} else {
+			try {
+				$categoryId = $this->input->post('category');
+				
+				$this->db->trans_start();
+				
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$desc = trim($this->input->post('description_'.$lang["language_code"]));
+					$features = trim($this->input->post('features_'.$lang["language_code"]));
+					if ($this->product_model->productSeriesTitleExistsExcept($title, $lang["language_id"], $serId)) {
+						throw new Exception("Another series with the same title (" . $title . ") already exists in language (" . $lang["language_name"] . ")");
+					}
+					$this->language_model->createOrUpdateLanguageText($series['product_series_name'], 
+					$lang["language_id"], $title);
+					$this->language_model->createOrUpdateLanguageText($series['product_series_description'], 
+					$lang["language_id"], $desc);
+					$this->language_model->createOrUpdateLanguageText($series['product_series_features'], 
+					$lang["language_id"], $features);
+				}
+				
+				$id = $this->product_model->updateProductSeries($series['product_series_name'], $series['product_series_description'], $series['product_series_features'], $categoryId, $serId);
+				$this->db->trans_complete();
+				redirect('admin/product_series');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/edit_product_series/' . $serId , 'refresh');
+			}
+		}
+	}
+	
+	public function delete_product_series($serId = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->product_model->deleteProductSeries($serId);
+		redirect('admin/product_series');
+	}
+	
+	public function product_series_bulk_process() {
+		$series = $this->input->post('series');
+		$action = $this->input->post('action');
+		if (trim($action) == "delete" && count($series) > 0) {
+			
+			if ($this->user_model->currentUserHasAuthority('PAGE_DELETE')) {
+				$this->product_model->deleteBulkSeries($series);
+				redirect('admin/product_series/');
+			} else {
+				redirect('admin/unauthorised');
+			}
+		} else {
+			redirect('admin/product_series/');
+		}
+	}
+	
+	public function product_series_specs($id = -1) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesExists($id))
+			redirect('admin');
+		
+		$series = $this->product_model->getProductSeriesInfo($id);
+		$series["generic_title"] = $this->language_model->getTextForAllLanguages($series["product_series_name"]);
+		$languages = $this->language_model->getAllLanguages();
+		$specs = $this->product_model->getProductSeriesSpecs($id);
+		for ($i = 0; $i < count($specs); $i++) {
+			foreach ($languages as $lang) {
+				$specs[$i]["title_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $specs[$i]["product_series_spec_title"]);
+			}
+		}
+		$this->set_title("Product Series Specs");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "MPRSER"));
+		$this->add_to_center("admin/","product_series_specs", array("series" => $series, "languages" => $languages, "specs" => $specs));
+		$this->load_lc_template_admin();
+	}
+	
+	public function create_product_series_specs_process($id = -1) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesExists($id))
+			redirect('admin');
+			
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->product_series_specs($id);
+		} else {
+			$titleIdentifierId = $this->language_model->createIdentifier("");
+			$this->db->trans_start();
+			foreach ($languages as $lang) {
+				$title = trim($this->input->post('title_'.$lang["language_code"]));
+				$this->language_model->createLanguageText($titleIdentifierId, $lang["language_id"], $title);
+			}
+			$this->product_model->createProductSeriesSpecs($titleIdentifierId, $id);
+			$this->db->trans_complete();
+			redirect('admin/product_series_specs/'.$id);
+		}
+	}
+	
+	public function edit_product_series_specs($specId = 0, $id = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesSpecExists($specId))
+			redirect('admin');
+		
+		$series = $this->product_model->getProductSeriesInfo($id);
+		$series["generic_title"] = $this->language_model->getTextForAllLanguages($series["product_series_name"]);
+		$languages = $this->language_model->getAllLanguages();
+		$specs = $this->product_model->getProductSeriesSpecById($specId, $id);
+			foreach ($languages as $lang) {
+				$specs["title_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $specs["product_series_spec_title"]);
+			}
+		$this->set_title("Product Series Specs");
+		$this->add_to_left("admin/","sidebar", array("section" => "PRODUCTS", "selection" => "MPRSER"));
+		$this->add_to_center("admin/","edit_product_series_spec", array("series" => $series, "languages" => $languages, "specs" => $specs));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_product_series_specs_process($specId = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesSpecExists($specId))
+			redirect('admin');
+		
+		$id = $this->input->post('specId');	
+		$languages = $this->language_model->getAllLanguages();
+		$specs = $this->product_model->getProductSeriesSpecById($specId, $id);
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+		}
+		if($this->form_validation->run() == FALSE) {
+			redirect('admin/edit_product_series_specs/' . $specId);
+		} else {
+			$this->db->trans_start();
+				foreach($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$this->language_model->createOrUpdateLanguageText($specs['product_series_spec_title'], 
+					$lang["language_id"], $title);
+				}
+					$this->db->trans_complete();
+					redirect('admin/product_series_specs/'. $id);
+		}
+	}
+	
+	public function delete_product_series_specs($specId = 0, $id = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->product_model->productSeriesSpecExists($specId))
+			redirect('admin');
+		
+		$this->product_model->deleteProductSeriesSpecById($specId, $id);
+		redirect('admin/product_series_specs/'. $id);
+	}
+	
+	public function product_series_specs_bulk_process($id = 0) {
+		$specs = $this->input->post('specs');
+		$action = $this->input->post('action');
+		if (trim($action) == "delete" && count($specs) > 0) {
+			
+			if ($this->user_model->currentUserHasAuthority('PAGE_DELETE')) {
+				$this->product_model->deleteSeriesSpecs($specs);
+				redirect('admin/product_series_specs/'. $id);
+			} else {
+				redirect('admin/unauthorised');
+			}
+		} else {
+			redirect('admin/product_series_specs/'. $id);
+		}
+	}
+	
+	public function users() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$users =  $this->user_model->getAllUsers();
+		$this->set_title("User Administration");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "UAP"));
+		$this->add_to_center("admin/","list_users", array("users" => $users));
+		$this->load_lc_template_admin();
+	}
+	
+	public function delete_page($id = -1) {
+		if (!$this->user_model->isLoggedIn() || !$this->page_model->pageExists($id))
+			redirect('admin');
+		
+		if ($this->user_model->currentUserHasAuthority('PAGE_DELETE')) {
+			$this->page_model->deletePage($id);
+			redirect('admin/pages');
+		} else {
+			redirect('admin/unauthorised');
+		}
+	}
+	
+	public function update_page($id = -1) {
+		if (!$this->user_model->isLoggedIn() || !$this->page_model->pageExists($id))
+			redirect('admin');
+		$languages = $this->language_model->getAllLanguages();
+		$page = $this->page_model->getPageInfo($id);
+		foreach ($languages as $lang) {
+			$page["title_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $page["page_title"]);
+			$page["meta_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $page["page_meta"]);
+			$page["content_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $page["page_content"]);
+			$page["nice_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $page["page_nice_name"]);
+		}
+		$this->set_title("Page Management");
+		$this->add_to_left("admin/","sidebar", array("section" => "PAGES", "selection" => "MPAGES"));
+		$this->add_to_center("admin/","update_pages", array("page" => $page, "languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function update_page_process($id = -1) {
+		if (!$this->user_model->isLoggedIn() || !$this->page_model->pageExists($id))
+			redirect('admin');
+		$page = $this->page_model->getPageInfo($id);
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('content_'.$lang["language_code"], 'Content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->update_page($id);
+		} else {
+			try {
+				$titleIdentifierId = $page["page_title"];
+				$metaIdentifierId = $page["page_meta"];
+				$contentIdentifierId = $page["page_content"];
+				$niceNameIdentifierId = $page["page_nice_name"];
+				
+				$this->db->trans_start();
+				
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$meta = trim($this->input->post('meta_'.$lang["language_code"]));
+					$content = trim($this->input->post('content_'.$lang["language_code"]));
+					$nice = url_title($title, 'dash', TRUE);
+					if ($this->page_model->pageTitleExists($title)) {
+						throw new Exception("Another page with the same title (" . $title . ") already exists");
+					}
+					
+					$this->language_model->createOrUpdateLanguageText($titleIdentifierId, $lang["language_id"], $title);
+					$this->language_model->createOrUpdateLanguageText($metaIdentifierId, $lang["language_id"], $meta);
+					$this->language_model->createOrUpdateLanguageText($contentIdentifierId, $lang["language_id"], $content);
+					$this->language_model->createOrUpdateLanguageText($niceNameIdentifierId, $lang["language_id"], $nice);
+				}
+				
+				$id = $this->page_model->updatePage($id, $titleIdentifierId, $metaIdentifierId, $contentIdentifierId, $niceNameIdentifierId, $this->session->userdata('user_id'));
+				$this->db->trans_complete();
+				redirect('admin/pages');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/update_page/' . $id, 'refresh');
+			}
+		}
+	}
+	
+	public function create_page() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$languages = $this->language_model->getAllLanguages();
+		$this->set_title("Page Management");
+		$this->add_to_left("admin/","sidebar", array("section" => "PAGES", "selection" => "CPAGES"));
+		$this->add_to_center("admin/","create_pages", array("languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function create_page_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$languages = $this->language_model->getAllLanguages();
+		foreach ($languages as $lang) {
+			$this->form_validation->set_rules('title_'.$lang["language_code"], 'Title', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+			$this->form_validation->set_rules('content_'.$lang["language_code"], 'Content', 'required');
+		}
+		if ($this->form_validation->run() == FALSE) {
+			$this->create_page();
+		} else {
+			try {
+				
+				$titleIdentifierId = $this->language_model->createIdentifier("");
+				$metaIdentifierId = $this->language_model->createIdentifier("");
+				$contentIdentifierId = $this->language_model->createIdentifier("");
+				$niceNameIdentifierId = $this->language_model->createIdentifier("");
+				
+				$this->db->trans_start();
+				
+				foreach ($languages as $lang) {
+					$title = trim($this->input->post('title_'.$lang["language_code"]));
+					$meta = trim($this->input->post('meta_'.$lang["language_code"]));
+					$content = trim($this->input->post('content_'.$lang["language_code"]));
+					$nice = url_title($title, 'dash', TRUE);
+					if ($this->page_model->pageTitleExists($title)) {
+						throw new Exception("Another page with the same title (" . $title . ") already exists");
+					}
+					$this->language_model->createLanguageText($titleIdentifierId, $lang["language_id"], $title);
+					$this->language_model->createLanguageText($metaIdentifierId, $lang["language_id"], $meta);
+					$this->language_model->createLanguageText($contentIdentifierId, $lang["language_id"], $content);
+					$this->language_model->createLanguageText($niceNameIdentifierId, $lang["language_id"], $nice);
+				}
+				
+				$id = $this->page_model->createPage($titleIdentifierId, $metaIdentifierId, $contentIdentifierId, $niceNameIdentifierId, $this->session->userdata('user_id'));
+				$this->db->trans_complete();
+				redirect('admin/pages');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/create_page', 'refresh');
+			}
+		}
+	}
+	
+	public function languages() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$languages = $this->language_model->getAllLanguages();
+		$this->set_title("Languages");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "LANG"));
+		$this->add_to_center("admin/","languages", array("languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function unauthorised() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->set_title("Unauthorized");
+		$this->add_to_left("admin/","sidebar");
+		$this->add_to_center("admin/","unauthorised");
+		$this->load_lc_template_admin();
+	}
+	
+	public function pages() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$pages =  $this->page_model->getAllPages();
+		$languages = $this->language_model->getAllLanguages();
+		for ($i = 0; $i < count($pages); $i++) {
+			$user = $this->user_model->getUserInfo($pages[$i]["page_created_by"]);
+			$pages[$i]["user_username"] = $user["user_username"];
+			foreach ($languages as $lang) {
+				$pages[$i]["title_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $pages[$i]["page_title"]);
+				$pages[$i]["meta_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $pages[$i]["page_meta"]);
+				$pages[$i]["content_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $pages[$i]["page_content"]);
+				$pages[$i]["nice_".$lang["language_code"]] = $this->language_model->getText($lang["language_id"], $pages[$i]["page_nice_name"]);
+			}
+		}
+		$this->set_title("Page Management");
+		$this->add_to_left("admin/","sidebar", array("section" => "PAGES", "selection" => "MPAGES"));
+		$this->add_to_center("admin/","manage_pages", array("pages" => $pages, "languages" => $languages));
+		$this->load_lc_template_admin();
+	}
+	
+	public function pages_bulk_process() {
+		$pages = $this->input->post('pages');
+		$action = $this->input->post('action');
+		if (trim($action) == "delete" && count($pages) > 0) {
+			
+			if ($this->user_model->currentUserHasAuthority('PAGE_DELETE')) {
+				$this->page_model->deletePages($pages);
+				redirect('admin/pages');
+			} else {
+				redirect('admin/unauthorised');
+			}
+		} else {
+			redirect('admin/pages');
+		}
+	}
+	
+	public function users_bulk_process() {
+		$users = $this->input->post('users');
+		$action = $this->input->post('action');
+		if (trim($action) == "delete" && count($users) > 0) {
+			$this->user_model->deleteUsers($users);
+			redirect('admin/users');
+		} else {
+			redirect('admin/users');
+		}
+	}
+	
+	public function set_privileges($id = -1) {
+		if (!$this->user_model->isLoggedIn() || !$this->user_model->userExists($id))
+			redirect('admin');
+		
+		$categories = $this->user_model->getRoleCategories();
+		for ($i = 0; $i<count($categories); $i++) {
+			$categories[$i]["roles"] = $this->user_model->getRolesByCategory($categories[$i]["role_category_id"]);
+			for ($j = 0; $j<count($categories[$i]["roles"]); $j++) {
+				$categories[$i]["roles"][$j]["has_role"] = $this->user_model->userHasRole($id, $categories[$i]["roles"][$j]["role_name"]);
+			}
+		}
+		$this->set_title("User Privileges");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "UAP"));
+		$this->add_to_center("admin/","user_privileges", array("categories" => $categories, "id" => $id, "user" => $this->user_model->getUserInfo($id)));
+		$this->load_lc_template_admin();
+	}
+	
+	public function set_privileges_process($id = 0) {
+		if (!$this->user_model->isLoggedIn() || !$this->user_model->userExists($id))
+			redirect('admin');
+		
+		$this->user_model->removeAllUserRoles($id);
+		$this->user_model->addUserRoles($id, $this->input->post('privileges'));
+		$this->session->set_flashdata('success','Privileges updated successfully!');
+		redirect('admin/set_privileges/' . $id, 'refresh');
+	}
+	
+	public function create_user_process() {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->form_validation->set_rules('username', 'Username', 'trim|required|min_length[4]|max_length[30]|xss_clean');
+		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[4]');
+		$this->form_validation->set_rules('firstname', 'Firstname', 'required');
+		$this->form_validation->set_rules('lastname', 'Lastname', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			$this->users();
+		} else {
+			try {
+				$username = trim($this->input->post('username'));
+				$password = md5($this->input->post('password'));
+				$fname = $this->input->post('firstname');
+				$lname = $this->input->post('lastname');
+				$user = $this->user_model->doesUsernameExist($username);
+				if ($user) {
+					throw new Exception("Username already exists");
+				} else {
+					$id = $this->user_model->registerUser($username, $password, $fname, $lname);
+					redirect('admin/users#tab2');
+				}
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/users#tab2', 'refresh');
+			}
+		}
+	}
+	
+	public function edit_user($id = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		$users =  $this->user_model->getAllUsers();
+		$this->set_title("User Administration");
+		$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "UAP"));
+		$this->add_to_center("admin/","edit_user", array("user" => 
+							$this->user_model->getUserInfo($id), "id" => $id));
+		$this->load_lc_template_admin();
+	}
+	
+	public function edit_user_process($id = 0){
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+		
+		$this->form_validation->set_rules('password', ' Password', 'trim|required|min_length[4]');
+		$this->form_validation->set_rules('firstname', 'Firstname', 'required');
+		$this->form_validation->set_rules('lastname', 'Lastname', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			$this->set_title("User Administration");
+			$this->add_to_left("admin/","sidebar", array("section" => "SETTINGS", "selection" => "UAP"));
+			$this->add_to_center("admin/","edit_user", array("user" => 
+								$this->user_model->getUserInfo($id), "id" => $id));
+			$this->load_lc_template_admin();
+		} else {
+			try {
+				$password = md5($this->input->post('password'));
+				$fname = $this->input->post('firstname');
+				$lname = $this->input->post('lastname');
+					$uid = $this->user_model->editUser($id, $password, $fname, $lname);
+					redirect('admin/users#tab2');
+				
+			} catch (Exception $e) {
+				$this->session->set_flashdata('error', $e->getMessage());
+				redirect('admin/users#tab2', 'refresh');
+			}
+		}
+	}
+	
+	public function delete_user($id = 0) {
+		if (!$this->user_model->isLoggedIn())
+			redirect('admin');
+			
+			$this->user_model->deleteUser($id);
+			redirect('admin/users#tab2');
+	}
+}
+
+?>

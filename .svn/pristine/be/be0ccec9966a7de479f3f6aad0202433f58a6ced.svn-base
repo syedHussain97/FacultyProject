@@ -1,0 +1,24 @@
+<?php
+
+class Faq_model extends CI_Model {
+	
+	function __construct() {
+		parent::__construct();
+	}
+	
+	function getAllFAQs() {
+		$q = $this->db->select('*')->from(APP_TABLE_FAQS)->order_by("faq_order","asc")->get();
+		return $q->result_array();
+	}
+	
+	function createFAQ($q, $a) {
+		$this->db->insert(APP_TABLE_FAQS, array("faq_question" => $q, "faq_answer" => $a));
+		return $this->db->insert_id();
+	}
+	
+	function orderFAQ($faqId, $faqOrder) {
+		$this->db->update(APP_TABLE_FAQS, array("faq_order" => $faqOrder), array("faq_id" => $faqId));
+	}
+}
+
+?>

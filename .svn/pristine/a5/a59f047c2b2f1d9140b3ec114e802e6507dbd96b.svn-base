@@ -1,0 +1,5 @@
+<h1>Supported Languages</h1>
+<?php
+	foreach ($languages as $language) {
+			echo "<p>" . $language["language_name"] . " -> " . $language["language_locale"]  . "</p>";
+}?>

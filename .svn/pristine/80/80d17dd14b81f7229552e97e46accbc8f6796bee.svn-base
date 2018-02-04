@@ -1,0 +1,104 @@
+<script style="text/javascript">
+
+function setValue(identifer, lid, iid) {
+	var textBoxId = "#" + identifer + "_" + lid;
+	var buttonId = "#" + identifer + "_" + lid + "_BUTTON";
+	var myVal = $(textBoxId).val();
+	
+	$(buttonId).attr("disabled", "true");
+	$(textBoxId).attr("disabled", "true");
+	
+    $.post("<?=base_url()?>index.php/api/set_language_text", { "identifier_id": iid, "language_id": lid, "text_content" : myVal },
+	 function(data){
+		$(buttonId).hide();
+	}, "json").error(function(data) {
+		alert("Some error occured. Please check your inputs.");
+		$(buttonId).removeAttr("disabled");
+		$(textBoxId).removeAttr("disabled");
+	});
+}
+
+function updateValue(identifer, lid, iid) {
+	var textBoxId = "#" + identifer + "_" + lid;
+	var buttonId = "#" + identifer + "_" + lid + "_BUTTON";
+	var myVal = $(textBoxId).val();
+	
+	$(buttonId).attr("disabled", "true");
+	$(textBoxId).attr("disabled", "true");
+	
+    $.post("<?=base_url()?>index.php/api/update_language_text", { "identifier_id": iid, "language_id": lid, "text_content" : myVal },
+	 function(data){
+		$(buttonId).hide();
+	}, "json").error(function(data) {
+		alert("Some error occured. Please check your inputs.");
+		$(buttonId).removeAttr("disabled");
+		$(textBoxId).removeAttr("disabled");
+	});
+}
+
+$(function() {
+	$( "#accordion" ).accordion({
+				autoHeight: false,
+				navigation: true,
+				collapsible: true
+			});
+});
+</script>
+<?=form_open('admin/create_identifier'); ?>
+<h3>Create New Identifier</h3>
+<?php
+	echo validation_errors();
+	if ($this->session->flashdata('error')) {
+?>
+<h2><?=$this->session->flashdata('error')?></h2>
+<?php
+	}
+?>
+<input type="text" name="identifier" value="<?php echo set_value('identifier'); ?>" size="50" />
+<input type="submit" value="Create" />
+<?=form_close(); ?>
+
+<div id="accordion" style="text-align: left; width: 600px;">
+<?php
+$x = 0;
+foreach ($identifiers as $identifier) {
+?>
+<h3><a href="#"><?=$identifier["language_identifier_name"]?></a></h3>
+<div>
+	<p>
+		<?php
+			foreach ($languages as $language) {
+		?>
+			<?=$language["language_name"]?>
+			<table>
+			<tr>
+			<?php
+			if ($text[$x] === "UNDEFINED") {
+			?>
+			<td>
+			<textarea name="text" id="<?=$identifier["language_identifier_name"]?>_<?=$language["language_id"]?>"></textarea></td>
+			<td><input id="<?=$identifier["language_identifier_name"]?>_<?=$language["language_id"]?>_BUTTON" type="submit" value="Set" onClick="javascript:setValue('<?=$identifier["language_identifier_name"]?>',<?=$language["language_id"]?>, <?=$identifier["language_identifier_id"]?>);" /></td>
+			<?php
+			} else {
+			?>
+			<td><textarea name="text" id="<?=$identifier["language_identifier_name"]?>_<?=$language["language_id"]?>"><?=$text[$x]?></textarea></td>
+			<td><input id="<?=$identifier["language_identifier_name"]?>_<?=$language["language_id"]?>_BUTTON" type="submit" name="Edit" value="Edit" onClick="javascript:updateValue('<?=$identifier["language_identifier_name"]?>',<?=$language["language_id"]?>, <?=$identifier["language_identifier_id"]?>);"/></td>
+			<?php
+			}
+			echo form_open('admin/clear_text');
+			?>
+				<td><input value="<?=$identifier["language_identifier_id"]?>" type="hidden" name="iid" /></td>
+				<td><input value="<?=$language["language_id"]?>" type="hidden" name="lid" /></td>
+				<td><?php echo form_submit('clear', 'Clear'); echo form_close(); ?></td>
+			</tr>
+			</table>
+		<?php
+				$x++;
+			}
+		?>
+	</p>
+</div>
+<?php
+}
+?>
+</div>

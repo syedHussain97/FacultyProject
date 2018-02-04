@@ -1,0 +1,94 @@
+<!-- Page Head -->
+<h2>Page Management</h2>
+<p id="page-intro">You can edit, delete and update pages from here.</p>
+
+<div class="clear"></div> <!-- End .clear -->
+<? if ($this->session->flashdata('error')) { ?>
+<div class="notification error png_bg">
+	<a href="#" class="close"><img src="<?=base_url()?>images/admin/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+	<div>
+		<?=$this->session->flashdata('error')?>
+	</div>
+</div>
+<? } ?>
+<div class="content-box column-left">
+	
+	<div class="content-box-header">
+		<h3>Create Page</h3>
+		<ul class="content-box-tabs">
+			<?php for ($i=0; $i<count($languages); $i++) { ?>
+			<li><a href="#<?=$languages[$i]["language_code"]?>" <?php if ($i==0) { ?> class="default-tab"<?php } ?>><?=$languages[$i]["language_name"]?></a></li>
+			<?php } ?>
+		</ul>
+		<div class="clear"></div>
+	</div> <!-- End .content-box-header -->
+
+	<?=form_open('admin/create_page_process'); ?>
+	<div class="content-box-content">
+		<?php $x = 0; foreach ($languages as $lang) { ?>
+		<div class="tab-content<?=($x==0)?" default-tab":""?>" id="<?=$lang["language_code"]?>">
+				<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+					<p>
+						<label>Title</label>
+							<input class="text-input medium-input" type="text" id="medium-input" name="title_<?=$lang["language_code"]?>" value="<?=set_value('title_'.$lang["language_code"],'')?>" /> 
+							<? if (form_error('title_'.$lang["language_code"])) { ?>
+							<?=form_error('title_'.$lang["language_code"],'<span class="input-notification error png_bg">','</span>')?>
+							<? } ?>
+					</p>
+					<p>
+						<label>Meta Tags</label>
+						<input class="text-input medium-input" type="text" id="medium-input" name="meta_<?=$lang["language_code"]?>" value="<?=set_value('meta_'.$lang["language_code"],'')?>" />
+						<? if (form_error('meta_'.$lang["language_code"])) { ?>
+						<?=form_error('meta_'.$lang["language_code"],'<span class="input-notification error png_bg">','</span>')?>
+						<? } ?>
+						<br /><small>Please enter comma separated meta-tags. If you don't know what these are, leave the field blank.</small>
+					</p>
+					<p>
+						<label>Content</label>
+						<textarea class="text-input textarea wysiwyg" id="textarea" name="content_<?=$lang["language_code"]?>" cols="79" rows="15"><?=set_value('content_'.$lang["language_code"],'')?></textarea>
+						<? if (form_error('content_'.$lang["language_code"])) { ?>
+						<?=form_error('content_'.$lang["language_code"],'<span class="input-notification error png_bg">','</span>')?>
+						<? } ?>
+					</p>
+				</fieldset>
+
+				<div class="clear"></div><!-- End .clear -->
+
+			
+
+		</div> <!-- End #tab2 -->
+		<?php $x++; } ?>
+
+	</div> <!-- End .content-box-content -->
+	
+</div> <!-- End .content-box -->
+
+<div class="content-box column-right">
+	
+	<div class="content-box-header"> <!-- Add the class "closed" to the Content box header to have it closed by default -->
+		
+		<h3>Actions</h3>
+		
+	</div> <!-- End .content-box-header -->
+	
+	<div class="content-box-content">
+		
+		<div class="tab-content default-tab">
+			
+			<fieldset>
+			<p>
+				<label for="status">Content Visibility</label>
+				<input type="checkbox" name="status" /> Online
+			</p>
+			<p>
+				<input class="button" type="submit" value="Publish" />
+			</p>
+			</fieldset>
+			
+		</div> <!-- End #tab3 -->        
+		
+	</div> <!-- End .content-box-content -->
+	
+</div> <!-- End .content-box -->
+</form>
+<div class="clear"></div>

@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Al Hafidh - App Admin Panel</title>
+<style type="text/css">
+.cen16bold {
+	font-family: "Century Gothic";
+	font-size: 16px;
+	font-weight: bold;
+	color: #FFF;
+}
+.cen16black {
+	font-family: "Century Gothic";
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+}
+a:link {
+	text-decoration: none;
+	color: #FFF;
+}
+a:visited {
+	text-decoration: none;
+	color: #FFF;
+}
+a:hover {
+	text-decoration: none;
+	color: #000;
+}
+a:active {
+	text-decoration: none;
+	color: #FFF;
+}
+.cen12 {	font-family: "Century Gothic";
+	font-size: 12px;
+	font-weight: normal;
+	color: #FFF;
+}
+.cen15gray {
+	font-family: "Century Gothic";
+	font-size: 15px;
+	font-weight: normal;
+	color: #595959;
+}
+</style>
+</head>
+<body bgcolor="#EDF0E6"><center>
+<body>
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td height="100" align="center" valign="top" bgcolor="#F28700"><table width="1024" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="25" height="100">&nbsp;</td>
+        <td width="150" align="left" valign="top"><img src="images/logoTop.png" width="150" height="100" /></td>
+        <td align="left" valign="top"><table width="849" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td height="15"></td>
+          </tr>
+          <tr>
+            <td height="25"><table width="849" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="20">&nbsp;</td>
+                <td width="749" class="cen16bold">Welcome to Administrator,</td>
+                <td width="80" class="cen16bold">Logout</td>
+              </tr>
+            </table></td>
+          </tr>
+          <tr>
+            <td height="25"></td>
+          </tr>
+          <tr>
+            <td height="25"><table width="849" border="0" align="left" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="20">&nbsp;</td>
+                <td width="748" class="cen16bold"><span class="cen16bold"><a href="index.html">Language Identifiers</a></span> | <a href="productstypes.html">Product Types </a>| <a href="productseries.html">Product Series</a> | <a href="features.html">Features</a> | <span class="cen16black">Products</span></td>
+                <td width="81">&nbsp;</td>
+              </tr>
+            </table></td>
+          </tr>
+          <tr>
+            <td height="10"></td>
+          </tr>
+        </table></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td height="20" align="center" valign="top"><table width="1024" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="25" height="20">&nbsp;</td>
+        <td width="150" align="left" valign="top"><img src="images/logoBot.png" width="150" height="20" /></td>
+        <td>&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle"><table width="975" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="50" align="center" valign="middle" bgcolor="#CCCCCC"><span class="cen16black">Add  Products</span></td>
+      </tr>
+      <tr>
+        <td align="center" valign="top" bgcolor="#E8E8E8"><table width="975" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="51">&nbsp;</td>
+            <td width="320" height="40">&nbsp;</td>
+            <td width="51">&nbsp;</td>
+            <td width="502">&nbsp;</td>
+            <td width="51">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td height="500" align="center" valign="top"><table width="320" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td height="30" align="left" valign="middle" class="cen15gray">Product Type</td>
+              </tr>
+              <tr>
+                <td height="30"><table width="320" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="left" valign="middle" style="background-image:url(images/bar1.png) ; background-repeat:no-repeat"></td>
+                    <td width="30" height="30" align="left" valign="middle"><img src="images/tik.png" width="30" height="30" /></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle">&nbsp;</td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle" class="cen15gray">Product Series</td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle"><table width="320" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="left" valign="middle" style="background-image:url(images/bar1.png) ; background-repeat:no-repeat"></td>
+                    <td width="30" height="30" align="left" valign="middle"><img src="images/tik.png" width="30" height="30" /></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle">&nbsp;</td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle" class="cen15gray">Cooling or Cooling &amp; Heating</td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle"><table width="320" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="left" valign="middle" style="background-image:url(images/bar1.png) ; background-repeat:no-repeat"></td>
+                    <td width="30" height="30" align="left" valign="middle"><img src="images/tik.png" width="30" height="30" /></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle">&nbsp;</td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle" class="cen15gray">Product BTU</td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle"><table width="320" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="left" valign="middle" style="background-image:url(images/bar1.png) ; background-repeat:no-repeat"></td>
+                    <td width="30" height="30" align="left" valign="middle"><img src="images/tik.png" width="30" height="30" /></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle">&nbsp;</td>
+              </tr>
+              <tr>
+                <td height="30" align="left" valign="middle" class="cen15gray">Discription</td>
+              </tr>
+              <tr>
+                <td height="175" align="left" valign="middle" bgcolor="#FFFFFF">&nbsp;</td>
+              </tr>
+              <tr>
+                <td height="20" align="left" valign="middle">&nbsp;</td>
+              </tr>
+              </table></td>
+            <td>&nbsp;</td>
+            <td align="left" valign="top"><table width="502" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td height="30" class="cen15gray">Product Image</td>
+              </tr>
+              <tr>
+                <td height="90" align="left" valign="top"><table width="502" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="90" height="90" bgcolor="#CCCCCC">&nbsp;</td>
+                    <td width="20" align="left" valign="top">&nbsp;</td>
+                    <td align="left" valign="top"><table width="392" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td height="28" class="cen15gray">Thumbnail Image</td>
+                      </tr>
+                      <tr>
+                        <td height="28" bgcolor="#FFFFFF">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td height="35" align="right" valign="bottom"><table width="392" border="0" align="center" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td width="186">&nbsp;</td>
+                            <td width="100" align="center" valign="middle"><img src="images/browseBtn.png" width="100" height="29" align="right" /></td>
+                            <td width="6" align="center" valign="middle"></td>
+                            <td width="100" height="29" align="center" valign="middle"><img src="images/uploadBtn.png" width="100" height="29" align="right" /></td>
+                          </tr>
+                        </table></td>
+                      </tr>
+                    </table></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td height="25">&nbsp;</td>
+              </tr>
+              <tr>
+                <td align="left" valign="top"><table width="502" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="90" height="90" bgcolor="#CCCCCC">&nbsp;</td>
+                    <td width="20" align="left" valign="top">&nbsp;</td>
+                    <td align="left" valign="top"><table width="392" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td height="28" class="cen15gray">Large Image</td>
+                      </tr>
+                      <tr>
+                        <td height="28" bgcolor="#FFFFFF">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td height="35" align="right" valign="bottom"><table width="392" border="0" align="center" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td width="186">&nbsp;</td>
+                            <td width="100" align="center" valign="middle"><img src="images/browseBtn.png" width="100" height="29" align="right" /></td>
+                            <td width="6" align="center" valign="middle"></td>
+                            <td width="100" height="29" align="center" valign="middle"><img src="images/uploadBtn.png" width="100" height="29" align="right" /></td>
+                          </tr>
+                        </table></td>
+                      </tr>
+                    </table></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td height="30" class="cen15gray">Features Icons</td>
+              </tr>
+              <tr>
+                <td height="200" align="left" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="50" height="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                      </tr>
+                      <tr>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                      </tr>
+                    </table></td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="50" height="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                      </tr>
+                      <tr>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                      </tr>
+                    </table></td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="50" height="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                        <td align="center" valign="middle">&nbsp;</td>
+                        <td width="50" align="center" valign="middle"><img src="images/icons.png" width="50" height="50" /></td>
+                      </tr>
+                      <tr>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                        <td height="30" align="center" valign="middle">&nbsp;</td>
+                        <td height="30" align="center" valign="middle"><img src="images/radioBtn.png" width="16" height="16" /></td>
+                      </tr>
+                    </table></td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td height="40" align="right" valign="top"><img src="images/saveBtn.png" width="150" height="40" /></td>
+              </tr>
+              <tr>
+                <td height="30" align="right" valign="top">&nbsp;</td>
+              </tr>
+            </table></td>
+            <td>&nbsp;</td>
+          </tr>
+        </table></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="40" align="center" valign="middle" bgcolor="#69666D"><table width="984" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="left" valign="middle" class="cen12">Al Hafidh @ 2012. All Rights Reserved</td>
+        <td align="right" valign="middle" class="cen12">Powered by <a href="http://destinationw3.com">DestinationW3</a></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+</body>
+</html>

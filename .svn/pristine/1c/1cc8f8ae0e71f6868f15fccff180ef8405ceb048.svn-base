@@ -1,0 +1,24 @@
+<?php
+
+class Subscription_model extends CI_Model {
+	
+	function __construct() {
+		parent::__construct();
+	}
+	
+	function getAllSubscribers() {
+		$q = $this->db->get(APP_TABLE_SUBSCRIBERS);
+		return $q->result_array();
+	}
+	
+	function countAllSubscribers() {
+		return $this->db->count_all(APP_TABLE_SUBSCRIBERS);
+	}
+	
+	function getSubscribers($start, $limit) {
+		$q = $this->db->select('*')->from(APP_TABLE_SUBSCRIBERS)->limit($limit, $start)->get();
+		return $q->result_array();
+	}
+}
+
+?>

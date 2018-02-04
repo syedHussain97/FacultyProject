@@ -1,0 +1,24 @@
+<?php
+
+class Helper_model extends CI_Model {
+	
+	function __construct() {
+		parent::__construct();
+	}
+	
+	function getPaginationConfig($baseURL, $perPage, $totalRows) {
+		$config['base_url'] = $baseURL;
+		$config['total_rows'] = $totalRows;
+		$config['per_page'] = $perPage;
+		$config['full_tag_open'] = '<div class="pagination">';
+		$config['full_tag_close'] = '</div>';
+		$config['anchor_class'] = 'class="number"';
+		$config['cur_tag_open'] = '<a href="#" class="number current">';
+		$config['cur_tag_close'] = '</a>';
+		$config['first_link'] = '&laquo; First';
+		$config['last_link'] = 'Last &raquo;';
+		return $config;
+	}
+}
+
+?>
